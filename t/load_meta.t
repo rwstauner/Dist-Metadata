@@ -35,7 +35,7 @@ foreach my $test (
   my ( $type, $content, $files ) = @$test;
   my $archive = fake_archive( files => $files );
 
-  new_ok( $mod, [ archive => $archive ] )->load_meta;
+  new_ok( $mod, [ archive => $archive, determine_packages => 0 ] )->load_meta;
   is( $loaded, $content, "loaded $type" );
   is( $created, $default, "loaded not created" );
 }

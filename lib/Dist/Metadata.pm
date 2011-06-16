@@ -10,8 +10,6 @@ use Carp qw(croak);
 use CPAN::Meta 2.1 ();
 use List::Util qw(first);    # core in perl v5.7.3
 
-#use Module::Metadata;
-
 =method new
 
   Dist::Metadata->new(file => $path);
@@ -25,6 +23,7 @@ Accepts a single 'file' argument that should be a path to a F<tar.gz> file.
 sub new {
   my $class = shift;
   my $self  = {
+    determine_packages => 1,
     @_ == 1 ? %{ $_[0] } : @_
   };
 
@@ -112,8 +111,6 @@ sub determine_metadata {
     }
   }
 
-  # TODO: determine_provided_packages
-
   # any passed in values should take priority
   foreach my $field ( keys %$meta ){
     $meta->{$field} = $self->{$field}
@@ -121,6 +118,82 @@ sub determine_metadata {
   }
 
   return $meta;
+}
+
+=method determine_packages
+
+  my $provides = $dm->determine_packages($meta);
+
+Attempt to determine packages provided by the dist.
+This is used when the META file does not include a C<provides>
+section and C<determine_packages> is not set to false in the constructor.
+
+
+If a L<CPAN::Meta> object is not provided a default one will be used.
+Files contained in the dist and packages found therein will be checked against
+the meta object's C<no_index> attribute
+(see L<CPAN::Meta/should_index_file>
+and  L<CPAN::Meta/should_index_package>).
+By default this ignores any files found in
+F<t/> or F<inc/> directories.
+
+=cut
+
+sub determine_packages {
+  # meta must be passed because to avoid infinite loop
+  my ( $self, $meta ) = @_;
+  # if not passed in, use defaults (we just want the 'no_index' property)
+  $meta ||= $self->meta_from_struct( $self->determine_metadata );
+
+  # not needed until now
+  require File::Temp;
+  require Module::Metadata;
+  require Cwd; # core
+
+  my @files =
+    grep { $meta->should_index_file( (m#^[^\\/]+/(.+)#)[0] ) } # chop root dir
+    grep { m#\.pm$# } $self->archive->list_files;
+
+  unless (@files) {
+    warn("No *.pm files found\n");
+    return {};
+  }
+
+  my $oldpwd = Cwd::cwd();
+  my $dir; # declare outside eval so we chdir back before it goes out of scope
+
+  # would prefer Try::Tiny but for 1 eval the dependency doesn't seem warranted
+  local $@;
+  my $determined = eval {
+    $dir = File::Temp->newdir();
+
+    chdir($dir)
+      or croak("Failed to chdir to temp dir '$dir'");
+
+    my $archive = $self->archive;
+    $archive->setcwd($dir);
+    $archive->extract(@files);
+
+    my $packages =
+      Module::Metadata->package_versions_from_directory( $dir, \@files ) || {};
+
+    # remove any packages that should not be indexed (if any)
+    foreach my $pack ( keys %$packages ) {
+      delete $packages->{$pack}
+        if !$meta->should_index_package($pack);
+    }
+
+    $packages; # return
+  };
+  if ($@) {
+    carp("Error determining packages: $@");
+    $determined = {};
+  }
+
+  chdir($oldpwd)
+    or carp("Failed to chdir back to $oldpwd"); # warn but don't die
+
+  return $determined;
 }
 
 =method file
@@ -158,6 +231,15 @@ sub load_meta {
   # no META file found in archive
   else {
     $meta = $self->meta_from_struct( $self->determine_metadata );
+  }
+
+  # Something has to be indexed, so if META has no (or empty) 'provides'
+  # attempt to determine packages unless specifically configured not to
+  if ( !keys %{ $meta->provides || {} } && $self->{determine_packages} ) {
+    # respect api/encapsulation
+    my $struct = $meta->as_struct;
+    $struct->{provides} = $self->determine_packages($meta);
+    $meta = $self->meta_from_struct($struct);
   }
 
   return $meta;
