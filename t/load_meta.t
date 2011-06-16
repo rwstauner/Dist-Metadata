@@ -5,8 +5,12 @@ use Test::MockObject 1.09;
 use lib 't/lib';
 use DM_Tester;
 
-my $loaded;
+my ( $default, $loaded, $created ) = (-1) x 3;
+
 Test::MockObject->new->fake_module('CPAN::Meta',
+  VERSION  => sub { 2 },
+  new      => sub { $created = $_[1]; return $_[0] },
+  create   => sub { shift->new(@_) },
   map {
     ( "load_${_}_string" => sub { $loaded = $_[1] } )
   } qw(json yaml)
@@ -31,8 +35,20 @@ foreach my $test (
 
   new_ok( $mod, [ archive => $archive ] )->load_meta;
   is( $loaded, $content, "loaded $type" );
+  is( $created, $default, "loaded not created" );
 }
 
-# TODO: test no meta file
+reset_vars();
+
+new_ok( $mod,
+  [ archive => fake_archive( files => { 'tar/README' => 'nevermind' } ) ]
+)->load_meta;
+
+is( $loaded, $default, 'meta file not found, not loaded' );
+is( ref($created), 'HASH', 'hash passed to create()' );
 
 done_testing;
+
+sub reset_vars {
+  ( $loaded, $created ) = ($default) x 2;
+}

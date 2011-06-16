@@ -6,7 +6,7 @@ package Dist::Metadata;
 # ABSTRACT: Information about a perl module distribution
 
 use Carp qw(croak);
-use CPAN::Meta;
+use CPAN::Meta 2.1;
 use Archive::Tar;
 use List::Util qw(first);    # core in perl v5.7.3
 
@@ -57,6 +57,72 @@ sub archive {
   };
 }
 
+=method default_metadata
+
+Returns a hashref of default values
+used to intialize a L<CPAN::Meta> object
+when a META file is not found.
+Called from L</determine_metadata>.
+
+=cut
+
+sub default_metadata {
+  my ($self) = @_;
+
+  return {
+    # required
+    abstract       => undef,
+    author         => [],
+    dynamic_config => 0,
+    generated_by   => ref($self) . ' version ' . $self->VERSION,
+    license        => ['unknown'],
+    'meta-spec'    => {
+      version => '2',
+      url     => 'http://search.cpan.org/perldoc?CPAN::Meta::Spec',
+    },
+    name           => undef,
+    release_status => 'stable',
+    version        => undef,
+
+    # optional
+    no_index => {
+      # ignore test and build directories by default
+      directory => [qw( t inc )],
+    },
+    # provides => { package => { file => $file, version => $version } }
+  };
+}
+
+=method determine_metadata
+
+Examine the archive and try to determine metadata.
+Returns a hashref which can be passed to L<CPAN::Meta/new>.
+This is used when the archive does not contain a META file.
+
+=cut
+
+sub determine_metadata {
+  my ($self) = @_;
+
+  my $meta = $self->default_metadata;
+
+  if ( my $file = $self->file ) {
+    if ( $file =~ m#([^\\/]+)-(v?[0-9._]+)\.tar\.gz$# ) {
+      @$meta{qw(name version)} = ( $1, $2 );
+    }
+  }
+
+  # TODO: determine_provided_packages
+
+  # any passed in values should take priority
+  foreach my $field ( keys %$meta ){
+    $meta->{$field} = $self->{$field}
+      if exists $self->{$field};
+  }
+
+  return $meta;
+}
+
 =method file
 
 Returns the 'file' parameter passed to the constructor.
@@ -90,7 +156,10 @@ sub load_meta {
   }
   # no META file found in archive
   else {
-    croak('TODO: determine basic metadata when META file not found');
+    $meta = CPAN::Meta->create(
+      $self->determine_metadata,
+      { lazy_validation => 1 },
+    );
   }
 
   return $meta;
