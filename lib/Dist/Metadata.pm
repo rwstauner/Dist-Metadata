@@ -147,19 +147,17 @@ sub load_meta {
   my @files   = $archive->list_files;
   my ($meta, $metafile);
 
-  # prefer json file
+  # prefer json file (spec v2)
   if ( $metafile = first { m#^([^/]+/)?META\.json$# } @files ) {
     $meta = CPAN::Meta->load_json_string( $archive->get_content($metafile) );
   }
+  # fall back to yaml file (spec v1)
   elsif ( $metafile = first { m#^([^/]+/)?META\.ya?ml$# } @files ) {
     $meta = CPAN::Meta->load_yaml_string( $archive->get_content($metafile) );
   }
   # no META file found in archive
   else {
-    $meta = CPAN::Meta->create(
-      $self->determine_metadata,
-      { lazy_validation => 1 },
-    );
+    $meta = $self->meta_from_struct( $self->determine_metadata );
   }
 
   return $meta;
@@ -174,6 +172,20 @@ Returns the L<CPAN::Meta> instance in use.
 sub meta {
   my ($self) = @_;
   return $self->{meta} ||= $self->load_meta;
+}
+
+=method meta_from_struct
+
+  $meta = $dm->meta_from_struct(\%struct);
+
+Passes the the provided C<\%struct> to L<CPAN::Meta/create>
+and returns the result.
+
+=cut
+
+sub meta_from_struct {
+  my ($self, $struct) = @_;
+  return CPAN::Meta->create( $struct, { lazy_validation => 1 } );
 }
 
 =method package_versions
