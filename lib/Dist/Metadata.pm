@@ -71,18 +71,18 @@ sub default_metadata {
 
   return {
     # required
-    abstract       => undef,
+    abstract       => 'unknown',
     author         => [],
     dynamic_config => 0,
-    generated_by   => ref($self) . ' version ' . $self->VERSION,
+    generated_by   => ( ref($self) || $self ) . ' version ' . $self->VERSION,
     license        => ['unknown'],
     'meta-spec'    => {
       version => '2',
       url     => 'http://search.cpan.org/perldoc?CPAN::Meta::Spec',
     },
-    name           => undef,
+    name           => 'unknown',
     release_status => 'stable',
-    version        => undef,
+    version        => 0,
 
     # optional
     no_index => {
