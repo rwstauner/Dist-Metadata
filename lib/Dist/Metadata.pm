@@ -183,6 +183,7 @@ and simply call the corresponding method on the L<CPAN::Meta> object.
 
 =for :list
 * X<name> name
+* X<provides> provides
 * X<version> version
 
 =cut
@@ -191,6 +192,7 @@ and simply call the corresponding method on the L<CPAN::Meta> object.
   no strict 'refs'; ## no critic (NoStrict)
   foreach my $method ( qw(
     name
+    provides
     version
   ) ){
     *$method = sub { $_[0]->meta->$method };
