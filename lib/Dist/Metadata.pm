@@ -176,6 +176,29 @@ sub meta {
   return $self->{meta} ||= $self->load_meta;
 }
 
+=method package_versions
+
+  $pv = $dm->package_versions();
+  # { 'Package::Name' => '1.0', 'Module::2' => '2.1' }
+
+Returns a simplified version of C<provides>:
+a hashref with package names as keys and versions as values.
+
+This can also be called as a class method
+which will operate on a passed in hashref.
+
+  $pv = Dist::Metadata->package_versions(\%provides);
+
+=cut
+
+sub package_versions {
+  my ($self) = shift;
+  my $provides = @_ ? shift : $self->provides; # || {}
+  return {
+    map { ($_ => $provides->{$_}{version}) } keys %$provides
+  };
+}
+
 =head1 INHERITED METHODS
 
 The following methods are available on this object
