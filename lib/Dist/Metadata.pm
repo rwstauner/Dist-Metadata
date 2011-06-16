@@ -211,9 +211,9 @@ my $path_to_archive;
   my $name = $dist->name;
   my $version = $dist->version;
 
-  my $provides = $dist->module_versions;
-  while( my ($module, $version) = each %$provides ){
-    print "Dist $name ($version) includes $module $version\n";
+  my $provides = $dist->package_versions;
+  while( my ($package, $version) = each %$provides ){
+    print "Dist $name ($version) includes $package $version\n";
   }
 
 =head1 DESCRIPTION
