@@ -5,9 +5,9 @@ use warnings;
 package Dist::Metadata;
 # ABSTRACT: Information about a perl module distribution
 
+use Archive::Tar;
 use Carp qw(croak);
 use CPAN::Meta 2.1;
-use Archive::Tar;
 use List::Util qw(first);    # core in perl v5.7.3
 
 #use Module::Metadata;
