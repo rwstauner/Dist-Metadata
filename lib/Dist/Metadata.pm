@@ -182,9 +182,8 @@ The following methods are available on this object
 and simply call the corresponding method on the L<CPAN::Meta> object.
 
 =for :list
-
-* name
-* version
+* X<name> name
+* X<version> version
 
 =cut
 
