@@ -154,6 +154,9 @@ sub determine_packages {
     grep { $meta->should_index_file( (m#^[^\\/]+/(.+)#)[0] ) } # chop root dir
     grep { m#\.pm$# } $self->archive->list_files;
 
+  # TODO: should we limit packages to lib/ if it exists?
+  # my @lib = grep { m#^[^\\/]+/lib/# } @files; @files = @lib if @lib;
+
   unless (@files) {
     warn("No *.pm files found\n");
     return {};
