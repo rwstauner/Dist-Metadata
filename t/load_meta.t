@@ -9,10 +9,10 @@ my ( $default, $loaded, $created ) = (-1) x 3;
 
 Test::MockObject->new->fake_module('CPAN::Meta',
   VERSION  => sub { 2 },
-  new      => sub { $created = $_[1]; return $_[0] },
-  create   => sub { shift->new(@_) },
+  new      => sub { bless { %{ $_[1] } }, $_[0] },
+  create   => sub { $created = $_[1]; shift->new(@_) },
   map {
-    ( "load_${_}_string" => sub { $loaded = $_[1] } )
+    ( "load_${_}_string" => sub { $loaded = $_[1]; $_[0]->new({loaded => $_[1]}); } )
   } qw(json yaml)
 );
 
