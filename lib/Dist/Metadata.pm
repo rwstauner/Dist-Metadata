@@ -176,6 +176,28 @@ sub meta {
   return $self->{meta} ||= $self->load_meta;
 }
 
+=head1 INHERITED METHODS
+
+The following methods are available on this object
+and simply call the corresponding method on the L<CPAN::Meta> object.
+
+=for :list
+
+* name
+* version
+
+=cut
+
+{
+  no strict 'refs'; ## no critic (NoStrict)
+  foreach my $method ( qw(
+    name
+    version
+  ) ){
+    *$method = sub { $_[0]->meta->$method };
+  }
+}
+
 1;
 
 =for :stopwords dist
