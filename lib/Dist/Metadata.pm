@@ -315,6 +315,7 @@ and simply call the corresponding method on the L<CPAN::Meta> object.
 
 1;
 
+=for Pod::Coverage name version provides
 
 =for test_synopsis
 my $path_to_archive;
