@@ -357,4 +357,18 @@ Please submit any suggestions or concerns.
 * Guess main module from dist name if no packages can be found
 * Review code to ensure proper, consistent use of L<File::Spec>
 
+=head1 SEE ALSO
+
+=head2 Dependencies
+
+=for :list
+* L<Module::Metadata>
+* L<CPAN::Meta>
+
+=head2 Related Modules
+
+=for :list
+* L<MyCPAN::Indexer>
+* L<CPAN::ParseDistribution>
+
 =cut
