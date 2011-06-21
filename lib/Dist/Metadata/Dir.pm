@@ -121,7 +121,7 @@ sub physical_directory {
 
 1;
 
-=for synopsis_test
+=for test_synopsis
 my $path_to_dir;
 
 =head1 SYNOPSIS

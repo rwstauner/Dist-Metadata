@@ -102,7 +102,7 @@ sub tar {
 
 1;
 
-=for synopsis_test
+=for test_synopsis
 my $path_to_archive;
 
 =head1 SYNOPSIS
