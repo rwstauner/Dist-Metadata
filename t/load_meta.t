@@ -2,8 +2,6 @@ use strict;
 use warnings;
 use Test::More 0.96;
 use Test::MockObject 1.09;
-use lib 't/lib';
-use DM_Tester;
 
 my ( $default, $loaded, $created ) = (-1) x 3;
 
