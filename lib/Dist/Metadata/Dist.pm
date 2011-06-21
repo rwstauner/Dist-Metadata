@@ -143,6 +143,8 @@ This is mostly so subclasses can define a specific one if necessary.
 
 A C<file_spec> attribute can be passed to the constructor
 to override the default.
+If you do this be sure to require the class you specify first
+(this module does not attempt to load it).
 
 B<NOTE>: This is used for the internal format of the dist.
 Tar archives, for example, are always in unix format.
