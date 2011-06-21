@@ -315,7 +315,6 @@ and simply call the corresponding method on the L<CPAN::Meta> object.
 
 1;
 
-=for :stopwords dist
 
 =for test_synopsis
 my $path_to_archive;
