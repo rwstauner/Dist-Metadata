@@ -102,8 +102,6 @@ sub tar {
 
 1;
 
-=for :stopwords unix
-
 =for synopsis_test
 my $path_to_archive;
 
