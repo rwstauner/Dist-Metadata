@@ -342,4 +342,10 @@ A dist can also be represented by a directory or merely a structure of data.
 If the dist does not contain a meta file
 the module will attempt to determine some of that data from the dist.
 
+The current actions of this module are inspired by
+what I believe the current PAUSE indexer does.
+
+B<NOTE>: This interface is still being defined.
+Please submit any suggestions or concerns.
+
 =cut
