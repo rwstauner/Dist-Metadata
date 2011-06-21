@@ -9,6 +9,9 @@ use Carp qw(croak carp);
 use CPAN::Meta 2.1 ();
 use List::Util qw(first);    # core in perl v5.7.3
 
+# something that is obviously not a real value
+use constant UNKNOWN => '- unknown -';
+
 =method new
 
   Dist::Metadata->new(file => $path);
@@ -101,16 +104,16 @@ sub default_metadata {
 
   return {
     # required
-    abstract       => 'unknown',
+    abstract       => UNKNOWN,
     author         => [],
     dynamic_config => 0,
     generated_by   => ( ref($self) || $self ) . ' version ' . $self->VERSION,
-    license        => ['unknown'],
+    license        => ['unknown'], # this 'unknown' comes from CPAN::Meta::Spec
     'meta-spec'    => {
       version => '2',
       url     => 'http://search.cpan.org/perldoc?CPAN::Meta::Spec',
     },
-    name           => 'unknown',
+    name           => UNKNOWN,
     release_status => 'stable',
     version        => 0,
 
