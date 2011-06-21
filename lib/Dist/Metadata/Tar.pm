@@ -103,3 +103,22 @@ sub tar {
 1;
 
 =for :stopwords unix
+
+=for synopsis_test
+my $path_to_archive;
+
+=head1 SYNOPSIS
+
+  my $dist = Dist::Metadata->new(file => $path_to_archive);
+
+=head1 DESCRIPTION
+
+This is a subclass of L<Dist::Metadata::Dist>
+to enable determining the metadata from a tar file.
+
+This is probably the most useful subclass.
+
+It's probably not very useful on it's own though,
+and should be used from L<Dist::Metadata/new>.
+
+=cut

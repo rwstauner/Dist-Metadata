@@ -426,3 +426,10 @@ The following methods B<must> be defined by subclasses:
 =for :list
 * L</file_content>
 * L</find_files>
+
+=head1 SEE ALSO
+
+=for :list
+* L<Dist::Metadata::Tar> - for examining a tar file
+* L<Dist::Metadata::Dir> - for a directory already on the disk
+* L<Dist::Metadata::Struct> - for mocking up a dist with perl data structures

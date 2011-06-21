@@ -14,8 +14,7 @@ push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
 =method new
 
   $dist = Dist::Metadata::Struct->new(files => {
-    'lib/Mod.pm' => 'package Mod; sub { ... }',
-    'README'     => 'this is a fake dist, useful for testing',
+    'lib/Mod.pm' => 'package Mod; sub something { ... }',
   });
 
 Accepts a C<files> parameter that should be a hash of
@@ -74,3 +73,26 @@ sub find_files {
 }
 
 1;
+
+=head1 SYNOPSIS
+
+  my $dm = Dist::Metadata->new(struct => {
+    files => {
+      'lib/Mod.pm' => 'package Mod; sub something { ... }',
+      'README'     => 'this is a fake dist, useful for testing',
+    }
+  });
+
+=head1 DESCRIPTION
+
+This is a subclass of L<Dist::Metadata::Dist>
+to enable mocking up a dist from perl data structures.
+
+This is mostly used for testing
+but might be useful if you already have an in-memory representation
+of a dist that you'd like to examine.
+
+It's probably not very useful on it's own though,
+and should be used from L<Dist::Metadata/new>.
+
+=cut

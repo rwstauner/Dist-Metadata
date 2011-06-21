@@ -120,3 +120,22 @@ sub physical_directory {
 }
 
 1;
+
+=for synopsis_test
+my $path_to_dir;
+
+=head1 SYNOPSIS
+
+  my $dm = Dist::Metadata->new(dir => $path_to_dir);
+
+=head1 DESCRIPTION
+
+This is a subclass of L<Dist::Metadata::Dist>
+to enable getting the dists metadata from a directory.
+
+This can be useful if you already have a dist extracted into a directory.
+
+It's probably not very useful on it's own though,
+and should be used from L<Dist::Metadata/new>.
+
+=cut
