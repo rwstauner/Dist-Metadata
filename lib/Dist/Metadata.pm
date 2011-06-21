@@ -5,8 +5,7 @@ use warnings;
 package Dist::Metadata;
 # ABSTRACT: Information about a perl module distribution
 
-use Archive::Tar ();
-use Carp qw(croak);
+use Carp qw(croak carp);
 use CPAN::Meta 2.1 ();
 use List::Util qw(first);    # core in perl v5.7.3
 
@@ -14,9 +13,36 @@ use List::Util qw(first);    # core in perl v5.7.3
 
   Dist::Metadata->new(file => $path);
 
-Constructor.
+A dist can be represented by
+a tar file,
+a directory,
+or a data structure.
 
-Accepts a single 'file' argument that should be a path to a F<tar.gz> file.
+The format will be determined by the presence of the following options
+(checked in this order):
+
+=for :list
+* C<struct> - hash of data to build a mock dist; See L<Dist::Metadata::Struct>.
+* C<dir> - path to the root directory of a dist
+* C<file> - the path to a F<.tar.gz> file
+
+You can also slyly pass in your own object as a C<dist> parameter
+in which case this module will just use that.
+This can be useful if you need to use your own subclass
+(perhaps while developing a new format).
+
+Other options that can be specified:
+
+=begin :list
+
+* C<name> - dist name
+
+* C<version> - dist version
+
+* C<determine_packages> - boolean to indicate whether dist should be searched
+for packages if no META file is found.  Defaults to true.
+
+=end :list
 
 =cut
 
@@ -27,39 +53,44 @@ sub new {
     @_ == 1 ? %{ $_[0] } : @_
   };
 
+  my @formats = qw( dist file dir struct );
+  croak(qq[A dist must be specified (one of ] .
+      join(', ', map { "'$_'" } @formats) . ')')
+    unless first { $self->{$_} } @formats;
+
   bless $self, $class;
-
-  croak q['file' parameter not supplied]
-    unless $self->{file} || $self->{archive};
-
-  return $self;
 }
 
-=method archive
+=method dist
 
-Returns the archive object (loaded from L</file>).
+Returns the dist object (subclass of L<Dist::Metadata::Dist>.
 
 =cut
 
-sub archive {
+sub dist {
   my ($self) = @_;
-  return $self->{archive} ||= do {
-    my $file = $self->file;
-
-    croak "File '$file' does not exist"
-      unless -e $file;
-
-    my $tar = Archive::Tar->new();
-    $tar->read($file);
-
-    $tar; # return
+  return $self->{dist} ||= do {
+    my $dist;
+    if( my $struct = $self->{struct} ){
+      require Dist::Metadata::Struct;
+      $dist = Dist::Metadata::Struct->new(%$struct);
+    }
+    elsif( my $dir = $self->{dir} ){
+      require Dist::Metadata::Dir;
+      $dist = Dist::Metadata::Dir->new(dir => $dir);
+    }
+    elsif ( my $file = $self->{file} ){
+      require Dist::Metadata::Tar;
+      $dist = Dist::Metadata::Tar->new(file => $file);
+    }
+    $dist; # return
   };
 }
 
 =method default_metadata
 
 Returns a hashref of default values
-used to intialize a L<CPAN::Meta> object
+used to initialize a L<CPAN::Meta> object
 when a META file is not found.
 Called from L</determine_metadata>.
 
@@ -94,21 +125,25 @@ sub default_metadata {
 
 =method determine_metadata
 
-Examine the archive and try to determine metadata.
+Examine the dist and try to determine metadata.
 Returns a hashref which can be passed to L<CPAN::Meta/new>.
-This is used when the archive does not contain a META file.
+This is used when the dist does not contain a META file.
 
 =cut
 
 sub determine_metadata {
   my ($self) = @_;
 
+  my $dist = $self->dist;
   my $meta = $self->default_metadata;
 
-  if ( my $file = $self->file ) {
-    if ( $file =~ m#([^\\/]+)-(v?[0-9._]+)\.tar\.gz$# ) {
-      @$meta{qw(name version)} = ( $1, $2 );
-    }
+  # get name and version from dist if dist was able to parse them
+  foreach my $att (qw(name version)) {
+    my $val = $dist->$att;
+    # if the dist could determine it that's better than the default
+    # but undef won't validate.  value in $self will still override.
+    $meta->{$att} = $val
+      if defined $val;
   }
 
   # any passed in values should take priority
@@ -145,93 +180,49 @@ sub determine_packages {
   # if not passed in, use defaults (we just want the 'no_index' property)
   $meta ||= $self->meta_from_struct( $self->determine_metadata );
 
-  # not needed until now
-  require File::Temp;
-  require Module::Metadata;
-  require Cwd; # core
-
-  my @files =
-    grep { $meta->should_index_file( (m#^[^\\/]+/(.+)#)[0] ) } # chop root dir
-    grep { m#\.pm$# } $self->archive->list_files;
+  my @files = grep { $meta->should_index_file( $_ ) } $self->dist->perl_files;
 
   # TODO: should we limit packages to lib/ if it exists?
-  # my @lib = grep { m#^[^\\/]+/lib/# } @files; @files = @lib if @lib;
+  # my @lib = grep { m#^lib/# } @files; @files = @lib if @lib;
 
   unless (@files) {
-    warn("No *.pm files found\n");
+    warn("No perl files found in distribution\n");
     return {};
   }
 
-  my $oldpwd = Cwd::cwd();
-  my $dir; # declare outside eval so we chdir back before it goes out of scope
+  my $packages = $self->dist->determine_packages(@files);
 
-  # would prefer Try::Tiny but for 1 eval the dependency doesn't seem warranted
-  local $@;
-  my $determined = eval {
-    $dir = File::Temp->newdir();
-
-    chdir($dir)
-      or croak("Failed to chdir to temp dir '$dir'");
-
-    my $archive = $self->archive;
-    $archive->setcwd($dir);
-    $archive->extract(@files);
-
-    my $packages =
-      Module::Metadata->package_versions_from_directory( $dir, \@files ) || {};
-
-    # remove any packages that should not be indexed (if any)
-    foreach my $pack ( keys %$packages ) {
-      delete $packages->{$pack}
-        if !$meta->should_index_package($pack);
-    }
-
-    $packages; # return
-  };
-  if ($@) {
-    carp("Error determining packages: $@");
-    $determined = {};
+  # remove any packages that should not be indexed (if any)
+  foreach my $pack ( keys %$packages ) {
+    delete $packages->{$pack}
+      if !$meta->should_index_package($pack);
   }
 
-  chdir($oldpwd)
-    or carp("Failed to chdir back to $oldpwd"); # warn but don't die
-
-  return $determined;
-}
-
-=method file
-
-Returns the 'file' parameter passed to the constructor.
-Should be the path to an archive file.
-
-=cut
-
-sub file {
-  return $_[0]->{file};
+  return $packages;
 }
 
 =method load_meta
 
-Loads the metadata from the L</file>.
+Loads the metadata from the L</dist>.
 
 =cut
 
 sub load_meta {
   my ($self) = @_;
 
-  my $archive = $self->archive;
-  my @files   = $archive->list_files;
-  my ($meta, $metafile);
+  my $dist  = $self->dist;
+  my @files = $dist->list_files;
+  my ( $meta, $metafile );
 
   # prefer json file (spec v2)
-  if ( $metafile = first { m#^([^/]+/)?META\.json$# } @files ) {
-    $meta = CPAN::Meta->load_json_string( $archive->get_content($metafile) );
+  if ( $metafile = first { m#^META\.json$# } @files ) {
+    $meta = CPAN::Meta->load_json_string( $dist->file_content($metafile) );
   }
   # fall back to yaml file (spec v1)
-  elsif ( $metafile = first { m#^([^/]+/)?META\.ya?ml$# } @files ) {
-    $meta = CPAN::Meta->load_yaml_string( $archive->get_content($metafile) );
+  elsif ( $metafile = first { m#^META\.ya?ml$# } @files ) {
+    $meta = CPAN::Meta->load_yaml_string( $dist->file_content($metafile) );
   }
-  # no META file found in archive
+  # no META file found in dist
   else {
     $meta = $self->meta_from_struct( $self->determine_metadata );
   }
@@ -342,8 +333,9 @@ my $path_to_archive;
 This is sort of a companion to L<Module::Metadata>.
 It provides an interface for getting information about a distribution.
 
-This is mostly a wrapper around L<CPAN::Meta>
-providing an easy interface to find and load the meta file from a F<tar.gz> file.
+This is mostly a wrapper around L<CPAN::Meta> providing an easy interface
+to find and load the meta file from a F<tar.gz> file.
+A dist can also be represented by a directory or merely a structure of data.
 
 If the dist does not contain a meta file
 the module will attempt to determine some of that data from the dist.
