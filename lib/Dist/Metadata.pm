@@ -348,4 +348,13 @@ what I believe the current PAUSE indexer does.
 B<NOTE>: This interface is still being defined.
 Please submit any suggestions or concerns.
 
+=head1 TODO
+
+=for :list
+* Rename test dists to pass Protability Tests
+* More tests
+* C<trust_meta> option (to allow setting it to false)
+* Guess main module from dist name if no packages can be found
+* Review code to ensure proper, consistent use of L<File::Spec>
+
 =cut
