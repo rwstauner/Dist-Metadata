@@ -352,7 +352,6 @@ Please submit any suggestions or concerns.
 =head1 TODO
 
 =for :list
-* Rename test dists to pass Protability Tests
 * More tests
 * C<trust_meta> option (to allow setting it to false)
 * Guess main module from dist name if no packages can be found
