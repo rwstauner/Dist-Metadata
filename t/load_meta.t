@@ -22,8 +22,8 @@ my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
 
 foreach my $test (
-  [ json => j => { 'tar/META.json' => 'j' } ],
-  [ yaml => y => { 'tar/META.yml'  => 'y' } ],
+  [ json => j => { 'META.json' => 'j' } ],
+  [ yaml => y => { 'META.yml'  => 'y' } ],
 
   # usually it's spelled .yml but yaml spec suggests .yaml
   [ yaml => y => { 'tar/META.yaml' => 'y' } ],
@@ -33,9 +33,9 @@ foreach my $test (
   )
 {
   my ( $type, $content, $files ) = @$test;
-  my $archive = fake_archive( files => $files );
+  my $struct = { files => $files };
 
-  new_ok( $mod, [ archive => $archive, determine_packages => 0 ] )->load_meta;
+  new_ok( $mod, [ struct => $struct, determine_packages => 0 ] )->load_meta;
   is( $loaded, $content, "loaded $type" );
   is( $created, $default, "loaded not created" );
 }
@@ -43,7 +43,7 @@ foreach my $test (
 reset_vars();
 
 new_ok( $mod,
-  [ archive => fake_archive( files => { 'tar/README' => 'nevermind' } ) ]
+  [ struct => { files => { 'README' => 'nevermind' } }, determine_packages => 0 ]
 )->load_meta;
 
 is( $loaded, $default, 'meta file not found, not loaded' );
