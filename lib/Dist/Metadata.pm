@@ -349,8 +349,6 @@ what I believe the current PAUSE indexer does.
 B<NOTE>: This interface is still being defined.
 Please submit any suggestions or concerns.
 
-=for :stopwords TODO
-
 =head1 TODO
 
 =for :list
