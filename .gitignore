@@ -1,2 +1,4 @@
 /Dist-Metadata*
+corpus/*.tar.gz
+corpus/structs.pl
 .build

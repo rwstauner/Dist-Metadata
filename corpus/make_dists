@@ -1,0 +1,73 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use FindBin;       # core
+use Archive::Tar;
+use File::Find;    # core
+use File::Spec::Functions qw(catfile catdir abs2rel);    # core
+use IO::File;      # core
+use Data::Dumper ();  # core
+
+my $work_dir = $FindBin::Bin;
+my $structs;
+my $dists = {
+  metafile => {
+    dir  => 'Dist-Metadata-Test-MetaFile-2.2',
+  },
+  nometafile => {
+    dir  => 'Dist-Metadata-Test-NoMetaFile-0.1',
+  },
+  subdir => {
+    dir  => 'Dist-Metadata-Test-SubDir-1.5',
+    cd   => 'subdir',
+  },
+  noroot => {
+    dir  => '.',
+    cd   => 'noroot',
+    file => 'noroot.tar.gz',
+  },
+};
+
+while( my ($name, $dist) = each %$dists ){
+  my $tar = Archive::Tar->new;
+  my $struct = {};
+  my $tgz  = $dist->{file} || $dist->{dir} . '.tar.gz';
+
+  my $wd = $dist->{cd}
+    ? catdir( $work_dir, $dist->{cd} )
+    : $work_dir;
+  my $fd = catdir( $wd, $dist->{dir} );
+
+  my @files;
+  find({
+      wanted => sub {
+        push @files, $_
+          if -f $_;
+      },
+      no_chdir => 1,
+    },
+    $fd
+  );
+
+  foreach my $file ( @files ){
+    my $rel = abs2rel($file, $wd);
+    my $content = slurp($file);
+    $tar->add_data( $rel => $content );
+    $struct->{$rel} = $content;
+  }
+
+  $tar->write(catfile($work_dir, $tgz));
+  $structs->{$name} = $struct;
+}
+
+{
+  local $Data::Dumper::Indent = 1;
+  spit(
+    catfile($work_dir, 'structs.pl'),
+    Data::Dumper->Dump( [$structs], ['Dist::Metadata::Test::Structs'] )
+  );
+}
+
+sub slurp { local $/; IO::File->new($_[0], 'r')->getline }
+sub spit  {           IO::File->new($_[0], 'w')->print($_[1]) }
