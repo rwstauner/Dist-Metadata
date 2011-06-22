@@ -42,7 +42,9 @@ Other options that can be specified:
 
 * C<version> - dist version
 
-* C<determine_packages> - boolean to indicate whether dist should be searched
+=item *
+
+C<determine_packages> - boolean to indicate whether dist should be searched
 for packages if no META file is found.  Defaults to true.
 
 =end :list
@@ -66,7 +68,7 @@ sub new {
 
 =method dist
 
-Returns the dist object (subclass of L<Dist::Metadata::Dist>.
+Returns the dist object (subclass of L<Dist::Metadata::Dist>).
 
 =cut
 

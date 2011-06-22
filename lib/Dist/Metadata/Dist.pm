@@ -290,9 +290,9 @@ sub parse_name_and_version {
 =method perl_files
 
 Returns the subset of L</list_files> that look like perl files.
-Currently returns anything matching C<\.pm$>
+Currently returns anything matching C</\.pm$/>
 
-TODO: This should probably be customizable.
+B<TODO>: This should probably be customizable.
 
 =cut
 
