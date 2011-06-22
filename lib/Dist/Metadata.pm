@@ -122,7 +122,7 @@ sub default_metadata {
     # optional
     no_index => {
       # ignore test and build directories by default
-      directory => [qw( t inc )],
+      directory => [qw( inc t xt )],
     },
     # provides => { package => { file => $file, version => $version } }
   };
@@ -175,7 +175,10 @@ the meta object's C<no_index> attribute
 (see L<CPAN::Meta/should_index_file>
 and  L<CPAN::Meta/should_index_package>).
 By default this ignores any files found in
-F<t/> or F<inc/> directories.
+F<inc/>,
+F<t/>,
+or F<xt/>
+directories.
 
 =cut
 
