@@ -323,12 +323,12 @@ my $path_to_archive;
 =head1 SYNOPSIS
 
   my $dist = Dist::Metadata->new(file => $path_to_archive);
-  my $name = $dist->name;
-  my $version = $dist->version;
+
+  my $description = sprintf "Dist %s (%s)", $dist->name, $dist->version;
 
   my $provides = $dist->package_versions;
   while( my ($package, $version) = each %$provides ){
-    print "Dist $name ($version) includes $package $version\n";
+    print "$description includes $package $version\n";
   }
 
 =head1 DESCRIPTION
