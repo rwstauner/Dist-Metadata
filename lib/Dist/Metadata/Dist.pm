@@ -345,8 +345,10 @@ sub remove_root_dir {
   my ($self, @files) = @_;
   return unless @files;
 
+  # FIXME: can we use File::Spec for these regexp's instead of [\\/] ?
+
   # grab the root dir from the first file
-  $files[0] =~ m{^([^/]+)/}
+  $files[0] =~ m{^([^\\/]+)[\\/]}
     # if not matched quit now
     or return (undef, @files);
 
@@ -356,7 +358,7 @@ sub remove_root_dir {
   # strip $dir from each file
   for (@files) {
 
-    m{^\Q$dir\E/(.+)$}
+    m{^\Q$dir\E[\\/](.+)$}
       # if the match failed they're not all under the same root so just return now
       or return (undef, @files);
 
