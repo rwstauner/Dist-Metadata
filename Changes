@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [Fixes]
+  - Change determine_packages to always return paths in unix format
+    (as required by CPAN::Meta::Spec)
+
   [Enhancements]
   - Include 'xt/' in the default no_index:directory list
 

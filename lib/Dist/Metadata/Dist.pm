@@ -247,10 +247,16 @@ sub packages_from_directory {
 
   my $provides = try {
     # M::M::p_v_f_d expects full paths for \@files
-    Module::Metadata->package_versions_from_directory($dir,
+    my $packages = Module::Metadata->package_versions_from_directory($dir,
       # FIXME: $self->file_spec->splitpath($_) (write tests first)
       [map { File::Spec->catfile($dir, $_) } @files]
     );
+    while ( my ($pack, $pv) = each %$packages ) {
+      # CPAN::Meta expects file paths in Unix format
+      $pv->{file} =
+        File::Spec::Unix->catfile( $self->file_spec->splitdir( $pv->{file} ) );
+    }
+    $packages; # return
   }
   catch {
     carp("Failed to determine packages: $_[0]");
