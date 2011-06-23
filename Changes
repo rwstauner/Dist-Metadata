@@ -2,7 +2,11 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [Enhancements]
   - Include 'xt/' in the default no_index:directory list
+
+  [Documentation]
+  - Add items to pod TODO list
 
 0.901     2011-06-22T01:22:07Z
 
