@@ -6,6 +6,7 @@ package Dist::Metadata::Dist;
 
 use Carp qw(croak carp);     # core
 use File::Spec ();           # core
+use File::Spec::Unix ();     # core
 use Try::Tiny 0.09;
 
 =method new

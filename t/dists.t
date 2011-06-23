@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More 0.96;
-use File::Spec; # core
+use File::Spec (); # core
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;

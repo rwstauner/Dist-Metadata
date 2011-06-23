@@ -6,7 +6,7 @@ package Dist::Metadata::Struct;
 # ABSTRACT: Enable Dist::Metadata for a data structure
 
 use Carp qw(croak carp); # core
-use File::Spec::Unix;    # core
+use File::Spec::Unix (); # core
 use parent 'Dist::Metadata::Dist';
 
 push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
