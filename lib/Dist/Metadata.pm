@@ -364,7 +364,7 @@ Please submit any suggestions or concerns.
 * Review code to ensure proper, consistent use of L<File::Spec>
 * Use L<CPAN::DistnameInfo> to parse name/version from files
 * Add change log info (L<CPAN::Changes>)?
-* Subclass as L<CPAN::Dist::Metadata> just so that it has C<CPAN> in the name?
+* Subclass as C<CPAN::Dist::Metadata> just so that it has C<CPAN> in the name?
 
 =head1 SEE ALSO
 
