@@ -254,8 +254,9 @@ sub packages_from_directory {
     );
     while ( my ($pack, $pv) = each %$packages ) {
       # CPAN::Meta expects file paths in Unix format
+      # since M::M::p_v_f_d reads from physical dir use base File::Spec to split
       $pv->{file} =
-        File::Spec::Unix->catfile( $self->file_spec->splitdir( $pv->{file} ) );
+        File::Spec::Unix->catfile( File::Spec->splitdir( $pv->{file} ) );
     }
     $packages; # return
   }

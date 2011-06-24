@@ -2,6 +2,7 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Fix path mismatch for "provides" when using Module::Metadata on Win32
   - Add more TODO ideas
 
 0.903     2011-06-23T05:59:41Z
