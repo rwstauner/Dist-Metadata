@@ -66,9 +66,6 @@ Returns the keys of the C<files> hash.
 sub find_files {
   my ($self) = @_;
 
-  # place an entry in the hash for consistency with other formats
-  $self->{dir} = '';
-
   return keys %{ $self->{files} };
 }
 
