@@ -5,8 +5,7 @@ package Dist::Metadata::Dist;
 # ABSTRACT: Base class for format-specific implementations
 
 use Carp qw(croak carp);     # core
-# TODO: remove these functions (namespace::(clean|autoclean|functions)?)
-use Path::Class 0.24 qw(file foreign_file);
+use Path::Class 0.24 ();
 use Try::Tiny 0.09;
 
 =method new
@@ -110,11 +109,13 @@ sub extract_into {
 
   my @disk_files;
   foreach my $file (@files) {
-    my $ff = foreign_file( $self->file_spec, $file );
+    # FIXME: this foreign_file currently only works b/c Dir doesn't use this method
+    my $ff = $self->path_class_file->new_foreign( $self->file_spec, $file );
     # Translate dist format (relative path) to disk/OS format and prepend $dir.
     # This dir_list + basename hack is probably ok because the paths in a dist
     # should always be relative (if there *was* a volume we wouldn't want it).
-    my $path = file( $dir, $ff->dir->dir_list, $ff->basename );
+    my $path = $self->path_class_file
+      ->new( $dir, $ff->dir->dir_list, $ff->basename );
 
     # legacy mkpath interface (should be compatible with any version installed)
     File::Path::mkpath( $path->dir, 0, oct(700) );
@@ -199,7 +200,9 @@ sub full_path {
     # FIXME: is there a way to do this with File::Spec?
     if $file =~ m@^\Q${root}\E[\\/]@;
 
-  return foreign_file($self->file_spec, $root, $file)->stringify;
+  # FIXME: does this foreign_file work w/ Dir ?
+  return $self->path_class_file
+    ->new_foreign($self->file_spec, $root, $file)->stringify;
 }
 
 =method list_files
@@ -275,7 +278,8 @@ sub packages_from_directory {
   my @pvfd = ($dir);
   # M::M::p_v_f_d expects full paths for \@files
   push @pvfd, [map {
-    file($_)->is_absolute ? $_ : file($dir, $_)->stringify
+    $self->path_class_file->new($_)->is_absolute
+      ? $_ : $self->path_class_file->new($dir, $_)->stringify
   } @files]
     if @files;
 
@@ -286,7 +290,8 @@ sub packages_from_directory {
     while ( my ($pack, $pv) = each %$packages ) {
       # M::M::p_v_f_d returns files in native OS format (obviously);
       # CPAN::Meta expects file paths in Unix format
-      $pv->{file} = file($pv->{file})->as_foreign('Unix')->stringify;
+      $pv->{file} = $self->path_class_file
+        ->new($pv->{file})->as_foreign('Unix')->stringify;
     }
     $packages; # return
   }
@@ -324,6 +329,18 @@ sub parse_name_and_version {
   return ($name, $version);
 }
 
+=method path_class_dir
+
+Returns the class name used for L<Path::Class::Dir> objects.
+
+=method path_class_file
+
+Returns the class name used for L<Path::Class::File> objects.
+
+=cut
+
+sub path_class_dir  { $_[0]->{path_class_dir}  ||= 'Path::Class::Dir'  }
+sub path_class_file { $_[0]->{path_class_file} ||= 'Path::Class::File' }
 
 =method perl_files
 
