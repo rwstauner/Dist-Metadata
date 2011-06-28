@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More 0.96;
-use Path::Class 0.24;
+use Path::Class 0.24 qw(file);
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
