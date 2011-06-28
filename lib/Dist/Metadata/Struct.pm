@@ -46,11 +46,12 @@ sub file_content {
   # 5.10: given(ref($content))
 
   if( my $ref = ref $content ){
+    local $/; # do this here because of a weird bug found: http://bit.ly/mhaQ4x
     return $ref eq 'SCALAR'
       # allow a scalar ref
       ? $$content
       # or an IO-like object
-      : do { local $/; $content->getline; }
+      : $content->getline;
   }
   # else a simple string
   return $content;

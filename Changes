@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [Fixes]
+  - Work around weird, possible perl bug (described at http://bit.ly/mhaQ4x)
+    that made Struct->file_content return undef for IO-like objects
+
   [Prereqs]
   - use Path::Class instead of File::Spec
 
