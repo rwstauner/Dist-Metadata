@@ -11,6 +11,10 @@ Revision history for Dist-Metadata
 
   - Clarify details of module's purpose in Pod Description
 
+  [Testing]
+  - Report version of JSON::PP (if any) installed to help debug
+    troublesome smoke testing environments
+
 0.904     2011-06-24T06:09:23Z
 
   - Fix path mismatch for "provides" when using Module::Metadata on Win32
