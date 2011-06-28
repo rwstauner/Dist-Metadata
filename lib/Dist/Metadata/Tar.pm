@@ -7,7 +7,6 @@ package Dist::Metadata::Tar;
 
 use Archive::Tar ();
 use Carp qw(croak carp); # core
-use File::Spec::Unix (); # core
 use Try::Tiny 0.09;
 use parent 'Dist::Metadata::Dist';
 
@@ -25,11 +24,11 @@ sub required_attribute { 'file' }
 
 =method default_file_spec
 
-Returns L<File::Spec::Unix> since tar files must be in unix format.
+Returns C<Unix> since tar files must be in unix format.
 
 =cut
 
-sub default_file_spec { 'File::Spec::Unix' }
+sub default_file_spec { 'Unix' }
 
 =method determine_name_and_version
 

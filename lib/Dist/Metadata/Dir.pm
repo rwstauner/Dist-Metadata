@@ -7,7 +7,7 @@ package Dist::Metadata::Dir;
 
 use Carp qw(croak carp);    # core
 use File::Find ();          # core
-use File::Spec ();          # core
+use Path::Class 0.24 qw(file);
 use parent 'Dist::Metadata::Dist';
 
 push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
@@ -67,7 +67,8 @@ Returns the content for the specified file.
 
 sub file_content {
   my ($self, $file) = @_;
-  my $path = File::Spec->catfile($self->{dir}, $self->full_path($file));
+  # This is a directory so file spec will always be native
+  my $path = file( $self->{dir}, $self->full_path($file) )->stringify;
 
   open(my $fh, '<', $path)
     or croak "Failed to open file '$path': $!";
@@ -91,7 +92,7 @@ sub find_files {
   File::Find::find(
     {
       wanted => sub {
-        push @files, File::Spec->abs2rel($_, $dir)
+        push @files, file($_)->relative($dir)->stringify
           if -f $_;
       },
       no_chdir => 1
@@ -113,7 +114,7 @@ sub physical_directory {
   my ($self) = @_;
 
   # go into root dir if there is one
-  return File::Spec->catdir($self->{dir}, $self->{root})
+  return Path::Class::Dir->new($self->{dir}, $self->{root})->stringify
     if $self->{root};
 
   return $self->{dir};

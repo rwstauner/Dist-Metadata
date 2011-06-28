@@ -5,8 +5,8 @@ package Dist::Metadata::Dist;
 # ABSTRACT: Base class for format-specific implementations
 
 use Carp qw(croak carp);     # core
-use File::Spec ();           # core
-use File::Spec::Unix ();     # core
+# TODO: remove these functions (namespace::(clean|autoclean|functions)?)
+use Path::Class 0.24 qw(file foreign_file);
 use Try::Tiny 0.09;
 
 =method new
@@ -29,17 +29,21 @@ sub new {
   croak qq['$req' parameter required]
     if $req && !$self->{$req};
 
+  # we just want the OS name ('Unix' or '')
+  $self->{file_spec} =~ s/^File::Spec(::)?//
+    if $self->{file_spec};
+
   return $self;
 }
 
 =method default_file_spec
 
-Defaults to C<File::Spec> in the base class.
-See L</file_spec>.
+Defaults to C<''> in the base class
+which will let L<File::Spec> determine the value.
 
 =cut
 
-sub default_file_spec { 'File::Spec' }
+sub default_file_spec { '' }
 
 =method determine_name_and_version
 
@@ -101,13 +105,18 @@ sub extract_into {
   require File::Basename;
 
   foreach my $file (@files) {
-    my $path = File::Spec->catfile($dir, $file);
+    my $ff = foreign_file( $self->file_spec, $file );
+    # Translate dist format (relative path) to disk/OS format and prepend $dir.
+    # This dir_list + basename hack is probably ok because the paths in a dist
+    # should always be relative (if there *was* a volume we wouldn't want it).
+    my $path = file( $dir, $ff->dir->dir_list, $ff->basename );
 
-    # legacy interface (should be compatible with whatever version is installed)
-    File::Path::mkpath( File::Basename::dirname($path), 0, oct(700) );
+    # legacy mkpath interface (should be compatible with any version installed)
+    File::Path::mkpath( $path->dir, 0, oct(700) );
 
-    open(my $fh, '>', $path)
-      or croak "Failed to open '$path' for writing: $!";
+    my $full_path = $path->stringify;
+    open(my $fh, '>', $full_path)
+      or croak "Failed to open '$full_path' for writing: $!";
     print $fh $self->file_content($file);
   }
 
@@ -139,22 +148,27 @@ sub find_files {
 
 =method file_spec
 
-Returns the class name of the L<File::Spec> module used for this format.
-This is mostly so subclasses can define a specific one if necessary.
+Returns the OS name of the L<File::Spec> module used for this format.
+This is mostly so subclasses can define a specific one
+(as L</default_file_spec>) if necessary.
 
 A C<file_spec> attribute can be passed to the constructor
 to override the default.
-If you do this be sure to require the class you specify first
-(this module does not attempt to load it).
 
 B<NOTE>: This is used for the internal format of the dist.
 Tar archives, for example, are always in unix format.
-For operations outside of the dist, L<File::Spec> will always be used.
+For operations outside of the dist,
+the format determined by L<File::Spec> will always be used.
 
 =cut
 
 sub file_spec {
-  return $_[0]->{file_spec} ||= $_[0]->default_file_spec;
+  my ($self) = @_;
+
+  $self->{file_spec} = $self->default_file_spec
+    if !exists $self->{file_spec};
+
+  return $self->{file_spec};
 }
 
 =method full_path
@@ -177,7 +191,7 @@ sub full_path {
     # FIXME: is there a way to do this with File::Spec?
     if $file =~ m@^\Q${root}\E[\\/]@;
 
-  return $self->file_spec->catfile($root, $file);
+  return foreign_file($self->file_spec, $root, $file)->stringify;
 }
 
 =method list_files
@@ -244,19 +258,21 @@ It returns a hashref like L<CPAN::Meta::Spec/provides>.
 sub packages_from_directory {
   my ($self, $dir, @files) = @_;
 
+  my @pvfd = ($dir);
+  # M::M::p_v_f_d expects full paths for \@files
+  push @pvfd, [map {
+    file($_)->is_absolute ? $_ : file($dir, $_)->stringify
+  } @files]
+    if @files;
+
   require Module::Metadata;
 
   my $provides = try {
-    # M::M::p_v_f_d expects full paths for \@files
-    my $packages = Module::Metadata->package_versions_from_directory($dir,
-      # FIXME: $self->file_spec->splitpath($_) (write tests first)
-      [map { File::Spec->catfile($dir, $_) } @files]
-    );
+    my $packages = Module::Metadata->package_versions_from_directory(@pvfd);
     while ( my ($pack, $pv) = each %$packages ) {
+      # M::M::p_v_f_d returns files in native OS format (obviously);
       # CPAN::Meta expects file paths in Unix format
-      # since M::M::p_v_f_d reads from physical dir use base File::Spec to split
-      $pv->{file} =
-        File::Spec::Unix->catfile( File::Spec->splitdir( $pv->{file} ) );
+      $pv->{file} = file($pv->{file})->as_foreign('Unix')->stringify;
     }
     $packages; # return
   }

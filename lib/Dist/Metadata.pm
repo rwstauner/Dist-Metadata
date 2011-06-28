@@ -365,7 +365,6 @@ Please submit any suggestions or concerns.
 * C<trust_meta> option (to allow setting it to false)
 * Guess main module from dist name if no packages can be found
 * Determine abstract?
-* Review code to ensure proper, consistent use of L<File::Spec>
 * Use L<CPAN::DistnameInfo> to parse name/version from files
 * Add change log info (L<CPAN::Changes>)?
 * Subclass as C<CPAN::Dist::Metadata> just so that it has C<CPAN> in the name?

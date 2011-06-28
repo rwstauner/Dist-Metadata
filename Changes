@@ -2,6 +2,9 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [Prereqs]
+  - use Path::Class instead of File::Spec
+
   - Clarify details of module's purpose in Pod Description
 
 0.904     2011-06-24T06:09:23Z

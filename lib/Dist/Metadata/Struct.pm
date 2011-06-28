@@ -6,7 +6,6 @@ package Dist::Metadata::Struct;
 # ABSTRACT: Enable Dist::Metadata for a data structure
 
 use Carp qw(croak carp); # core
-use File::Spec::Unix (); # core
 use parent 'Dist::Metadata::Dist';
 
 push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
@@ -27,12 +26,12 @@ sub required_attribute { 'files' }
 
 =method default_file_spec
 
-L<File::Spec::Unix> is the default for consistency/simplicity
+C<Unix> is the default for consistency/simplicity
 but C<file_spec> can be overridden in the constructor.
 
 =cut
 
-sub default_file_spec { 'File::Spec::Unix' }
+sub default_file_spec { 'Unix' }
 
 =method file_content
 
