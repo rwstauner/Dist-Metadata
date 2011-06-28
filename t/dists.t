@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More 0.96;
-use File::Spec (); # core
+use Path::Class 0.24;
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
@@ -110,7 +110,7 @@ foreach my $test  (
   }
   $_ = "corpus/$_" for ($file, $dir);
 
-  $_ = File::Spec->catfile($root, $_)
+  $_ = file($root, $_)->stringify
     for @$dists;
 
   foreach my $args (
