@@ -73,10 +73,10 @@ sub determine_packages {
   my ($self, @files) = @_;
 
   my $determined = try {
-    my $dir = $self->physical_directory(@files);
+    my @dirfiles = $self->physical_directory(@files);
 
     # return
-    $self->packages_from_directory($dir, @files);
+    $self->packages_from_directory(@dirfiles);
   }
   catch {
     carp("Error determining packages: $_[0]");
@@ -88,10 +88,14 @@ sub determine_packages {
 
 =method extract_into
 
-  $dist->extract_into($dir, @files);
+  my ($ddir, @dfiles) = $dist->extract_into($dir, @files);
 
 Extracts the specified files (or all files if not specified)
 into the specified directory.
+
+Returns a list of the directory
+(which may be a subdirectory of the C<$dir> passed in)
+and the files extracted (in native OS (on-disk) format).
 
 =cut
 
@@ -104,6 +108,7 @@ sub extract_into {
   require File::Path;
   require File::Basename;
 
+  my @disk_files;
   foreach my $file (@files) {
     my $ff = foreign_file( $self->file_spec, $file );
     # Translate dist format (relative path) to disk/OS format and prepend $dir.
@@ -118,9 +123,12 @@ sub extract_into {
     open(my $fh, '>', $full_path)
       or croak "Failed to open '$full_path' for writing: $!";
     print $fh $self->file_content($file);
+
+    # do we really want full path or do we want relative?
+    push(@disk_files, $full_path);
   }
 
-  return $dir;
+  return ($dir, @disk_files);
 }
 
 =method file_content
@@ -253,6 +261,12 @@ This is thin wrapper around
 L<Module::Metadata/package_versions_from_directory>.
 It returns a hashref like L<CPAN::Meta::Spec/provides>.
 
+B<NOTE>: C<$dir> must be a physical directory on the disk,
+therefore C<@files> (if specified) must be in native OS format.
+This function is called internally from L</determine_packages>
+(which calls L<physical_directory> (which calls L</extract_into>))
+which manages these requirements.
+
 =cut
 
 sub packages_from_directory {
@@ -328,6 +342,8 @@ sub perl_files {
 
 =method physical_directory
 
+  $dir = $dist->physical_directory(@files);
+
 Returns the path to a physical directory on the disk
 where the specified files can be found.
 
@@ -343,8 +359,7 @@ sub physical_directory {
   # dir will be removed when return value goes out of scope (in caller)
   my $dir = File::Temp->newdir();
 
-  $self->extract_into($dir, @files);
-  return $dir;
+  return $self->extract_into($dir, @files);
 }
 
 =method remove_root_dir
