@@ -338,8 +338,15 @@ my $path_to_archive;
 
 =head1 DESCRIPTION
 
-This is sort of a companion to L<Module::Metadata>.
-It provides an interface for getting information about a distribution.
+This module provides an easy interface for getting various metadata
+about a Perl module distribution.
+
+It is abstracts away the commong logic of:
+
+=for :list
+* reading a tar file (L<Archive::Tar>)
+* finding and reading the correct META file if the distribution contains one (L<CPAN::Meta>)
+* and determining some of the metadata if there is no META file (L<Module::Metadata>)
 
 This is mostly a wrapper around L<CPAN::Meta> providing an easy interface
 to find and load the meta file from a F<tar.gz> file.
@@ -347,9 +354,6 @@ A dist can also be represented by a directory or merely a structure of data.
 
 If the dist does not contain a meta file
 the module will attempt to determine some of that data from the dist.
-
-The current actions of this module are inspired by
-what I believe the current PAUSE indexer does.
 
 B<NOTE>: This interface is still being defined.
 Please submit any suggestions or concerns.
