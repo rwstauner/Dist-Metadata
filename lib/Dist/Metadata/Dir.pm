@@ -24,8 +24,10 @@ sub new {
   my $class = shift;
   my $self = $class->SUPER::new(@_);
 
-  # chop trailing slash if present
-  $self->{dir} =~ s{/*$}{};
+  # fix up dir (for example chop trailing slash if present)
+  $self->{dir} = $self->path_class_dir->new($self->{dir})->stringify;
+
+  # TODO: croak if not -d $self->dir
 
   return $self;
 }
