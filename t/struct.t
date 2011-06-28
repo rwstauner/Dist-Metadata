@@ -9,9 +9,10 @@ eval "require $mod" or die $@;
 
 # required_attribute
 {
-  is( $mod->required_attribute, 'files', "'files' attribute required" );
+  my $att = 'files';
+  is( $mod->required_attribute, $att, "'$att' attribute required" );
   my $ex = exception { $mod->new() };
-  like( $ex, qr/'files' parameter required/, "new dies without 'files'" );
+  like( $ex, qr/'$att' parameter required/, "new dies without '$att'" );
 }
 
 # don't create a dependency on IO::String or IO::Scalar for this simple test.
