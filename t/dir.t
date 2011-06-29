@@ -49,6 +49,12 @@ eval "require $mod" or die $@;
     'file content'
   );
 
+  like(
+    exception { $dist->file_content('missing.file') },
+    qr{Failed to open file 'corpus/noroot/missing\.file':},
+    'die on missing file'
+  );
+
   is_deeply([sort $dist->find_files], [sort @files], 'all files listed');
 }
 
