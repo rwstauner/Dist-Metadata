@@ -7,11 +7,16 @@ my $mod = 'Dist::Metadata::Tar';
 eval "require $mod" or die $@;
 
 # required_attribute
+# file doesn't exist
 {
   my $att = 'file';
   is( $mod->required_attribute, $att, "'$att' attribute required" );
   my $ex = exception { $mod->new() };
   like($ex, qr/'$att' parameter required/, "new dies without '$att'");
+
+  my $dist = new_ok( $mod, [ file => 'does-not._exist_' ] );
+  $ex = exception { $dist->tar };
+  like($ex, qr/does not exist/, 'file does not exist');
 }
 
 # default_file_spec
