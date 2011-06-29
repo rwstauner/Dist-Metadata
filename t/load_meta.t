@@ -9,7 +9,7 @@ Test::MockObject->new->fake_module('CPAN::Meta',
   VERSION  => sub { 2 },
   new      => sub { bless { %{ $_[1] } }, $_[0] },
   create   => sub { $created = $_[1]; shift->new(@_) },
-  as_struct => sub { +{ %{ $_[0] } } }, # unbless
+  #as_struct => sub { +{ %{ $_[0] } } }, # unbless
   (map { ( $_ => sub { undef } ) } qw(name version provides)),
   map {
     ( "load_${_}_string" => sub { $loaded = $_[1]; $_[0]->new({loaded => $_[1]}); } )
