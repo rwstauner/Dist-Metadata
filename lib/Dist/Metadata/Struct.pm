@@ -41,6 +41,7 @@ Returns the string content for the specified name.
 
 sub file_content {
   my ($self, $file) = @_;
+  # TODO: should we croak if not found?  would be consistent with Dir
   my $content = $self->{files}{ $self->full_path($file) };
 
   # 5.10: given(ref($content))
