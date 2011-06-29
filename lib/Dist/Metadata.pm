@@ -88,6 +88,10 @@ sub dist {
       require Dist::Metadata::Tar;
       $dist = Dist::Metadata::Tar->new(file => $file);
     }
+    else {
+      # new() checks for one and dies without so we shouldn't get here
+      croak q[No dist format parameters found!];
+    }
     $dist; # return
   };
 }
