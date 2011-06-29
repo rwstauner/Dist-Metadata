@@ -9,9 +9,11 @@ Revision history for Dist-Metadata
   [Prereqs]
   - use Path::Class instead of File::Spec
 
+  [Documentation]
   - Clarify details of module's purpose in Pod Description
 
   [Testing]
+  - Add dist format tests
   - Report version of JSON::PP (if any) installed to help debug
     troublesome smoke testing environments
 
