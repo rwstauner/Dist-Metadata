@@ -372,6 +372,7 @@ Please submit any suggestions or concerns.
 * Use L<CPAN::DistnameInfo> to parse name/version from files
 * Add change log info (L<CPAN::Changes>)?
 * Subclass as C<CPAN::Dist::Metadata> just so that it has C<CPAN> in the name?
+* Use L<File::Find::Rule::Perl>?
 
 =head1 SEE ALSO
 
