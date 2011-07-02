@@ -120,7 +120,13 @@ foreach my $test  (
   ){
     my $dm = new_ok( $mod, $args );
 
-    is_deeply( $dm->$_, $exp->{$_}, "verify $_ for @$args" )
+    # FIXME: perl 5.6.2 weirdness: http://www.cpantesters.org/cpan/report/4297a762-a314-11e0-b62c-be5be1de4735
+    # #   Failed test 'verify corpus/noroot/lib/Dist/Metadata/Test/NoRoot/PM.pm for dir corpus/noroot'
+    # #   at t/dists.t line 124.
+    # #     Structures begin differing at:
+    # #          $got = HASH(0x11c22d0)
+    # #     $expected = undef
+    is_deeply( $dm->$_, $exp->{$_}, "verify $_ for @$args" ) || diag explain [$dm, $_, $exp]
       for keys %$exp;
   }
 }
