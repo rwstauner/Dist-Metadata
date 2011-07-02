@@ -2,3 +2,4 @@
 corpus/*.tar.gz
 corpus/structs.pl
 .build
+cover_db/
