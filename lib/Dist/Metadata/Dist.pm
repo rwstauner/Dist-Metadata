@@ -28,21 +28,26 @@ sub new {
   croak qq['$req' parameter required]
     if $req && !$self->{$req};
 
-  # we just want the OS name ('Unix' or '')
-  $self->{file_spec} =~ s/^File::Spec(::)?//
-    if $self->{file_spec};
+  if ( exists $self->{file_spec} ) {
+    # we just want the OS name ('Unix' or '')
+    $self->{file_spec} =~ s/^File::Spec(::)?//
+      if $self->{file_spec};
+    # blank is no good, use "Native" hack
+    $self->{file_spec} = 'Native'
+      if !$self->{file_spec};
+  }
 
   return $self;
 }
 
 =method default_file_spec
 
-Defaults to C<''> in the base class
+Defaults to C<'Native'> in the base class
 which will let L<File::Spec> determine the value.
 
 =cut
 
-sub default_file_spec { '' }
+sub default_file_spec { 'Native' }
 
 =method determine_name_and_version
 

@@ -24,7 +24,7 @@ eval "require $mod" or die $@;
 }
 
 # default_file_spec
-  is( $mod->default_file_spec, '', 'default to native file spec for dir' );
+  is( $mod->default_file_spec, 'Native', 'default to native file spec for dir' );
 
 # dir
 # file_content

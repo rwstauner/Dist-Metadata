@@ -8,6 +8,7 @@ Revision history for Dist-Metadata
 
   [Prereqs]
   - use Path::Class instead of File::Spec
+  - ensure File::Spec::Native is available
 
   [Documentation]
   - Clarify details of module's purpose in Pod Description

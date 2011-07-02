@@ -53,6 +53,14 @@ foreach my $test (
     'determined package with translated path' );
 }
 
-# TODO: test w/ file_spec => ''
+# test using default File::Spec
+{
+  my $dist = new_ok( $mod, [ file_spec => '', files => {
+    README => 'read me',
+    'Module.pm' => \"package Some::Module;\nour \$VERSION = 2;",
+  } ] );
+  is_deeply( $dist->determine_packages, {'Some::Module' => { file => 'Module.pm', version => 2 }},
+    'found package in root' );
+}
 
 done_testing;
