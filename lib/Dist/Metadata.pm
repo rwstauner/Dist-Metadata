@@ -345,7 +345,7 @@ my $path_to_archive;
 This module provides an easy interface for getting various metadata
 about a Perl module distribution.
 
-It is abstracts away the commong logic of:
+It takes care of the common logic of:
 
 =for :list
 * reading a tar file (L<Archive::Tar>)
