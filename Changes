@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.910     2011-07-03T00:06:00Z
+
   [Fixes]
   - Work around weird, possible perl bug (described at http://bit.ly/mhaQ4x)
     that made Struct->file_content return undef for IO-like objects
