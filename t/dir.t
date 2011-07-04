@@ -51,7 +51,7 @@ eval "require $mod" or die $@;
 
   like(
     exception { $dist->file_content('missing.file') },
-    qr{Failed to open file 'corpus/noroot/missing\.file':},
+    qr{Failed to open file 'corpus.+noroot.+missing\.file':},
     'die on missing file'
   );
 
