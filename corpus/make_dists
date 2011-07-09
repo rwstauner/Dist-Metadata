@@ -57,7 +57,7 @@ while( my ($name, $dist) = each %$dists ){
     $struct->{$rel} = $content;
   }
 
-  $tar->write(catfile($work_dir, $tgz));
+  $tar->write(catfile($work_dir, $tgz), Archive::Tar::COMPRESS_GZIP());
   $structs->{$name} = $struct;
 }
 
