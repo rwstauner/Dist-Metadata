@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.912     2011-07-14T23:38:40Z
+
+  - Use CPAN::DistnameInfo to parse name/version from file name
+
 0.911     2011-07-04T22:10:24Z
 
   - Fix test to use non-os specific paths in regexp
