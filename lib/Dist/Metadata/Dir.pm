@@ -42,8 +42,10 @@ Attempts to parse name and version from directory name.
 
 sub determine_name_and_version {
   my ($self) = @_;
+  # 'root' may be more accurate than 'dir'
+  $self->SUPER::determine_name_and_version();
   $self->set_name_and_version( $self->parse_name_and_version( $self->dir ) );
-  return $self->SUPER::determine_name_and_version();
+  return;
 }
 
 =method dir
