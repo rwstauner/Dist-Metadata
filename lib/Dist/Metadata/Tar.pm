@@ -5,7 +5,7 @@ use warnings;
 package Dist::Metadata::Tar;
 # ABSTRACT: Enable Dist::Metadata for tar files
 
-use Archive::Tar () 1;   # 0.07 isn't good enough
+use Archive::Tar 1 ();   # 0.07 isn't good enough
 use Carp qw(croak carp); # core
 use Try::Tiny 0.09;
 use parent 'Dist::Metadata::Dist';
