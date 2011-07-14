@@ -350,7 +350,7 @@ It takes care of the common logic of:
 =for :list
 * reading a tar file (L<Archive::Tar>)
 * finding and reading the correct META file if the distribution contains one (L<CPAN::Meta>)
-* and determining some of the metadata if there is no META file (L<Module::Metadata>)
+* and determining some of the metadata if there is no META file (L<Module::Metadata>, L<CPAN::DistnameInfo>)
 
 This is mostly a wrapper around L<CPAN::Meta> providing an easy interface
 to find and load the meta file from a F<tar.gz> file.
@@ -369,7 +369,6 @@ Please submit any suggestions or concerns.
 * C<trust_meta> option (to allow setting it to false)
 * Guess main module from dist name if no packages can be found
 * Determine abstract?
-* Use L<CPAN::DistnameInfo> to parse name/version from files
 * Add change log info (L<CPAN::Changes>)?
 * Subclass as C<CPAN::Dist::Metadata> just so that it has C<CPAN> in the name?
 * Use L<File::Find::Rule::Perl>?
@@ -379,8 +378,9 @@ Please submit any suggestions or concerns.
 =head2 Dependencies
 
 =for :list
-* L<Module::Metadata>
 * L<CPAN::Meta>
+* L<Module::Metadata>
+* L<CPAN::DistnameInfo>
 
 =head2 Related Modules
 

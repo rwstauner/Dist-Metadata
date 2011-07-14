@@ -79,7 +79,7 @@ foreach my $test  (
     'noroot',
     {
       # can't guess name/version without formatted file name or root dir
-      name     => Dist::Metadata::UNKNOWN(),
+      name     => 'noroot', # modified in loop
       version  => '0',
       provides => {
         'Dist::Metadata::Test::NoRoot' => {
@@ -119,6 +119,8 @@ foreach my $test  (
     [struct => { files => $structs->{$key} }],
   ){
     my $dm = new_ok( $mod, $args );
+    # minimal name can be determined from file or dir but not struct
+    $exp->{name} = Dist::Metadata::UNKNOWN() if $key eq 'noroot' && $args->[0] eq 'struct';
 
     # FIXME: perl 5.6.2 weirdness: http://www.cpantesters.org/cpan/report/4297a762-a314-11e0-b62c-be5be1de4735
     # #   Failed test 'verify corpus/noroot/lib/Dist/Metadata/Test/NoRoot/PM.pm for dir corpus/noroot'
