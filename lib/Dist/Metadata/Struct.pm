@@ -47,7 +47,7 @@ sub file_content {
   # 5.10: given(ref($content))
 
   if( my $ref = ref $content ){
-    local $/; # do this here because of a weird bug found: http://bit.ly/mhaQ4x
+    local $/; # do this here because of perl bug prior to perl 5.15 (7c2d9d0)
     return $ref eq 'SCALAR'
       # allow a scalar ref
       ? $$content
