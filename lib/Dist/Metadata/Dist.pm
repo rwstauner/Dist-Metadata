@@ -337,9 +337,12 @@ sub parse_name_and_version {
     # release_status = $dist->maturity eq 'released' ? 'stable' : 'unstable';
     # -(TRIAL|RC) => 'testing', '_' => 'unstable'
     eval {
-      my $dnifile = $path;
+      # DistnameInfo expects any directories in unix format (thanks jeroenl)
+      my $dnifile = $self->path_class_file
+        ->new($path)->as_foreign('Unix')->stringify;
       # if it doesn't appear to have an extension fake one to help DistnameInfo
       $dnifile .= '.tar.gz' unless $dnifile =~ /\.[a-z]\w+$/;
+
       my $dni  = CPAN::DistnameInfo->new($dnifile);
       my $dni_name    = $dni->dist;
       my $dni_version = $dni->version;

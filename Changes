@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Pass paths to CPAN::DistnameInfo in Unix format.
+    Thanks to jeroenl for figuring out that test failure on Win32.
+    Closes RT 69585.
+
 0.912     2011-07-14T23:38:40Z
 
   - Use CPAN::DistnameInfo to parse name/version from file name
