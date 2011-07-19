@@ -2,9 +2,13 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.913     2011-07-19T21:15:24Z
+
   - Pass paths to CPAN::DistnameInfo in Unix format.
     Thanks to jeroenl for figuring out that test failure on Win32.
     Closes RT 69585.
+
+  - Remove unnecessary build file from release tarball
 
 0.912     2011-07-14T23:38:40Z
 
