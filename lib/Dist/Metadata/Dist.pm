@@ -115,7 +115,6 @@ sub extract_into {
 
   my @disk_files;
   foreach my $file (@files) {
-    # FIXME: this foreign_file currently only works b/c Dir doesn't use this method
     my $ff = $self->path_class_file->new_foreign( $self->file_spec, $file );
     # Translate dist format (relative path) to disk/OS format and prepend $dir.
     # This dir_list + basename hack is probably ok because the paths in a dist
