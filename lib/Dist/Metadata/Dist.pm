@@ -341,6 +341,8 @@ sub parse_name_and_version {
       my $dnifile = $path;
       # if it doesn't appear to have an extension fake one to help DistnameInfo
       $dnifile .= '.tar.gz' unless $dnifile =~ /\.[a-z]\w+$/;
+      # DistNameInfo needs the file path to be specified in Unix format
+      $dnifile = $self->path_class_file->new($dnifile)->as_foreign('Unix');
       my $dni  = CPAN::DistnameInfo->new($dnifile);
       my $dni_name    = $dni->dist;
       my $dni_version = $dni->version;
