@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# This script is used for generating test data when the dist is built
+
 use strict;
 use warnings;
 use FindBin;       # core
