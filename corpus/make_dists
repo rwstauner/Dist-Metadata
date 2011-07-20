@@ -7,7 +7,7 @@ use warnings;
 use FindBin;       # core
 use Archive::Tar;
 use File::Find;    # core
-use File::Spec::Functions qw(catfile catdir abs2rel);    # core
+use Path::Class 0.24;
 use IO::File;      # core
 use Data::Dumper ();  # core
 
@@ -37,9 +37,9 @@ while( my ($name, $dist) = each %$dists ){
   my $tgz  = $dist->{file} || $dist->{dir} . '.tar.gz';
 
   my $wd = $dist->{cd}
-    ? catdir( $work_dir, $dist->{cd} )
+    ? dir( $work_dir, $dist->{cd} )
     : $work_dir;
-  my $fd = catdir( $wd, $dist->{dir} );
+  my $fd = dir( $wd, $dist->{dir} );
 
   my @files;
   find({
@@ -53,20 +53,20 @@ while( my ($name, $dist) = each %$dists ){
   );
 
   foreach my $file ( @files ){
-    my $rel = abs2rel($file, $wd);
+    my $rel = file($file)->relative($wd);
     my $content = slurp($file);
     $tar->add_data( $rel => $content );
     $struct->{$rel} = $content;
   }
 
-  $tar->write(catfile($work_dir, $tgz), Archive::Tar::COMPRESS_GZIP());
+  $tar->write(file($work_dir, $tgz), Archive::Tar::COMPRESS_GZIP());
   $structs->{$name} = $struct;
 }
 
 {
   local $Data::Dumper::Indent = 1;
   spit(
-    catfile($work_dir, 'structs.pl'),
+    file($work_dir, 'structs.pl'),
     Data::Dumper->Dump( [$structs], ['Dist::Metadata::Test::Structs'] )
   );
 }
