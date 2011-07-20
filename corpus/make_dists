@@ -56,7 +56,8 @@ while( my ($name, $dist) = each %$dists ){
     my $rel = file($file)->relative($wd);
     my $content = slurp($file);
     $tar->add_data( $rel => $content );
-    $struct->{$rel} = $content;
+    # convert relative file path from Native to Unix since DM Struct defaults to Unix.
+    $struct->{ $rel->as_foreign('Unix') } = $content;
   }
 
   $tar->write(file($work_dir, $tgz), Archive::Tar::COMPRESS_GZIP());
