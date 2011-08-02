@@ -110,7 +110,6 @@ sub extract_into {
   @files = $self->list_files
     unless @files;
 
-  require File::Path;
   require File::Basename;
 
   my @disk_files;
@@ -122,8 +121,7 @@ sub extract_into {
     my $path = $self->path_class_file
       ->new( $dir, $ff->dir->dir_list, $ff->basename );
 
-    # legacy mkpath interface (should be compatible with any version installed)
-    File::Path::mkpath( $path->dir, 0, oct(700) );
+    $path->dir->mkpath(0, oct(700));
 
     my $full_path = $path->stringify;
     open(my $fh, '>', $full_path)
