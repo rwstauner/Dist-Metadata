@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.914     2011-08-02T16:01:46Z
+
   - Use Path::Class::Dir's mkpath for simplicity/compatibility.
     Closes RT 69961.  Thanks to MELEZHIK for reporting.
 
