@@ -197,10 +197,7 @@ sub determine_packages {
   # TODO: should we limit packages to lib/ if it exists?
   # my @lib = grep { m#^lib/# } @files; @files = @lib if @lib;
 
-  unless (@files) {
-    warn("No perl files found in distribution\n");
-    return {};
-  }
+  return {} if not @files;
 
   my $packages = $self->dist->determine_packages(@files);
 
