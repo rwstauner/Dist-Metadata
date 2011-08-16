@@ -187,7 +187,7 @@ directories.
 =cut
 
 sub determine_packages {
-  # meta must be passed because to avoid infinite loop
+  # meta must be passed to avoid infinite loop
   my ( $self, $meta ) = @_;
   # if not passed in, use defaults (we just want the 'no_index' property)
   $meta ||= $self->meta_from_struct( $self->determine_metadata );
@@ -201,7 +201,7 @@ sub determine_packages {
 
   my $packages = $self->dist->determine_packages(@files);
 
-  # remove any packages that should not be indexed (if any)
+  # remove any packages that should not be indexed
   foreach my $pack ( keys %$packages ) {
     delete $packages->{$pack}
       if !$meta->should_index_package($pack);
