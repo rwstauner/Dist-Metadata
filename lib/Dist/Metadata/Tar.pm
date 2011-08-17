@@ -6,8 +6,7 @@ package Dist::Metadata::Tar;
 # ABSTRACT: Enable Dist::Metadata for tar files
 
 use Archive::Tar 1 ();   # 0.07 isn't good enough
-use Carp qw(croak carp); # core
-use Try::Tiny 0.09;
+use Carp (); # core
 use parent 'Dist::Metadata::Dist';
 
 push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
@@ -21,6 +20,24 @@ Accepts a single C<file> argument that should be a path to a F<tar.gz> file.
 =cut
 
 sub required_attribute { 'file' }
+
+=method archive
+
+Returns an object representing the archive file.
+
+=cut
+
+sub archive {
+  my ($self) = @_;
+  return $self->{archive} ||= do {
+    my $file = $self->file;
+
+    Carp::croak "File '$file' does not exist"
+      unless -e $file;
+
+    $self->read_archive($file); # return
+  };
+}
 
 =method default_file_spec
 
@@ -45,7 +62,7 @@ sub determine_name_and_version {
 =method file
 
 The C<file> attribute passed to the constructor,
-used to load L</tar>.
+used to load L</archive>.
 
 =cut
 
@@ -61,7 +78,7 @@ Returns the content for the specified file.
 
 sub file_content {
   my ( $self, $file ) = @_;
-  return $self->tar->get_content( $self->full_path($file) );
+  return $self->archive->get_content( $self->full_path($file) );
 }
 
 =method find_files
@@ -75,31 +92,34 @@ sub find_files {
   return
     map  { $_->full_path }
     grep { $_->is_file   }
-      $self->tar->get_files;
+      $self->archive->get_files;
 }
 
-=method tar
+=method read_archive
 
-Returns the L<Archive::Tar> object in use (loaded from the C<file> attribute).
+  $dist->read_archive($file);
+
+Returns an L<Archive::Tar> object representing the specified file.
 
 =cut
 
+sub read_archive {
+  my ($self, $file) = @_;
+
+  my $archive = Archive::Tar->new();
+  $archive->read($file);
+
+  return $archive;
+}
+
 sub tar {
-  my ($self) = @_;
-  return $self->{tar} ||= do {
-    my $file = $self->file;
-
-    croak "File '$file' does not exist"
-      unless -e $file;
-
-    my $tar = Archive::Tar->new();
-    $tar->read($file);
-
-    $tar; # return
-  };
+  warn __PACKAGE__ . '::tar() is deprecated.  Use archive() instead.';
+  return $_[0]->archive;
 }
 
 1;
+
+=for Pod::Coverage tar
 
 =for test_synopsis
 my $path_to_archive;

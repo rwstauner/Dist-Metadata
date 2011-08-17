@@ -15,7 +15,7 @@ eval "require $mod" or die $@;
   like($ex, qr/'$att' parameter required/, "new dies without '$att'");
 
   my $dist = new_ok( $mod, [ file => 'does-not._exist_' ] );
-  $ex = exception { $dist->tar };
+  $ex = exception { $dist->archive };
   like($ex, qr/does not exist/, 'file does not exist');
 }
 
@@ -68,6 +68,12 @@ is_deeply(
 is($tar->root, 'Dist-Metadata-Test-NoMetaFile-0.1', 'root dir');
 
 # tar
-isa_ok($tar->tar, 'Archive::Tar');
+isa_ok($tar->archive, 'Archive::Tar');
+{
+  my $warning;
+  local $SIG{__WARN__} = sub { $warning = $_[0] };
+  isa_ok($tar->tar, 'Archive::Tar');
+  like($warning, qr/deprecated/, 'tar() works but is deprecated');
+}
 
 done_testing;
