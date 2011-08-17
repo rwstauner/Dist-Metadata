@@ -57,7 +57,7 @@ foreach my $test  (
   [
     [
       subdir =>
-      'Dist-Metadata-Test-SubDir-1.5.tar.gz',
+      'Dist-Metadata-Test-SubDir-1.5',
       'subdir',
     ],
     {
@@ -105,16 +105,15 @@ foreach my $test  (
 
   my ($key, $file, $dir) = @$dists;
   
-  if ( !$dir ) {
-    ($file, $dir) = ("$file.tar.gz", $file);
-  }
+  $dir ||= $file;
   $_ = "corpus/$_" for ($file, $dir);
 
   $_ = file($root, $_)->stringify
     for @$dists;
 
   foreach my $args (
-    [file => $file],
+    [file => "$file.tar.gz"],
+    [file => "$file.zip"],
     [dir  => $dir],
     [struct => { files => $structs->{$key} }],
   ){
