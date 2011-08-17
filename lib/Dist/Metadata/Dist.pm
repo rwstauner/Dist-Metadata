@@ -138,7 +138,8 @@ sub extract_into {
 =method file_content
 
 Returns the content for the specified file from the dist.
-Must be defined by subclasses.
+
+This B<must> be defined by subclasses.
 
 =cut
 
@@ -151,6 +152,8 @@ sub file_content {
 Determine the files contained in the dist.
 
 This is called from L</list_files> and cached on the object.
+
+This B<must> be defined by subclasses.
 
 =cut
 
