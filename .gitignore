@@ -1,5 +1,6 @@
 /Dist-Metadata*
 corpus/*.tar.gz
+corpus/*.zip
 corpus/structs.pl
 .build
 cover_db/

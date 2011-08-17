@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 use FindBin;       # core
-use Archive::Tar;
+use Archive::Any::Create;
 use File::Find;    # core
 use Path::Class 0.24;
 use IO::File;      # core
@@ -27,14 +27,13 @@ my $dists = {
   noroot => {
     dir  => '.',
     cd   => 'noroot',
-    file => 'noroot.tar.gz',
+    file => 'noroot',
   },
 };
 
 while( my ($name, $dist) = each %$dists ){
-  my $tar = Archive::Tar->new;
+  my $archive = Archive::Any::Create->new;
   my $struct = {};
-  my $tgz  = $dist->{file} || $dist->{dir} . '.tar.gz';
 
   my $wd = $dist->{cd}
     ? dir( $work_dir, $dist->{cd} )
@@ -55,12 +54,14 @@ while( my ($name, $dist) = each %$dists ){
   foreach my $file ( @files ){
     my $rel = file($file)->relative($wd);
     my $content = slurp($file);
-    $tar->add_data( $rel => $content );
+    $archive->add_file( $rel => $content );
     # convert relative file path from Native to Unix since DM Struct defaults to Unix.
     $struct->{ $rel->as_foreign('Unix') } = $content;
   }
 
-  $tar->write(file($work_dir, $tgz), Archive::Tar::COMPRESS_GZIP());
+  my $base  = $dist->{file} || $dist->{dir};
+  $archive->write_file(file($work_dir, "$base.$_")->stringify)
+    for qw(tar.gz zip);
   $structs->{$name} = $struct;
 }
 
