@@ -85,8 +85,8 @@ sub dist {
       $dist = Dist::Metadata::Dir->new(dir => $dir);
     }
     elsif ( my $file = $self->{file} ){
-      require Dist::Metadata::Tar;
-      $dist = Dist::Metadata::Tar->new(file => $file);
+      require Dist::Metadata::Archive;
+      $dist = Dist::Metadata::Archive->new(file => $file);
     }
     else {
       # new() checks for one and dies without so we shouldn't get here
