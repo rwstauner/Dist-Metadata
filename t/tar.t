@@ -36,7 +36,7 @@ is($tar->version, '0.1', 'version from file');
 # file_content
 is(
   $tar->file_content('README'),
-  qq[This "dist" is for testing the Tar implementation of Dist::Metadata.\n],
+  qq[This "dist" is for testing Dist::Metadata.\n],
   'got file content without specifying root dir'
 );
 

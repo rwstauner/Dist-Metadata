@@ -45,7 +45,7 @@ eval "require $mod" or die $@;
 
   is(
     $dist->file_content('README'),
-    qq[This "dist" is for testing the Tar implementation of Dist::Metadata.\n],
+    qq[This "dist" is for testing Dist::Metadata.\n],
     'file content'
   );
 
