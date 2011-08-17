@@ -91,6 +91,19 @@ sub file {
   return $_[0]->{file};
 }
 
+=method read_archive
+
+  $dist->read_archive($file);
+
+Returns a format-specific object representing the specified file.
+
+This B<must> be defined by subclasses.
+
+=cut
+
+sub read_archive {
+  Carp::croak q[Method 'read_archive' not defined];
+}
 
 1;
 

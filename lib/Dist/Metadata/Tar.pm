@@ -24,14 +24,6 @@ sub find_files {
       $self->archive->get_files;
 }
 
-=method read_archive
-
-  $dist->read_archive($file);
-
-Returns an L<Archive::Tar> object representing the specified file.
-
-=cut
-
 sub read_archive {
   my ($self, $file) = @_;
 
