@@ -78,10 +78,10 @@ sub determine_packages {
   my ($self, @files) = @_;
 
   my $determined = try {
-    my @dirfiles = $self->physical_directory(@files);
+    my @dir_and_files = $self->physical_directory(@files);
 
     # return
-    $self->packages_from_directory(@dirfiles);
+    $self->packages_from_directory(@dir_and_files);
   }
   catch {
     carp("Error determining packages: $_[0]");
@@ -93,14 +93,17 @@ sub determine_packages {
 
 =method extract_into
 
-  my ($ddir, @dfiles) = $dist->extract_into($dir, @files);
+  $ddir = $dist->extract_into($dir);
+  ($ddir, @dfiles) = $dist->extract_into($dir, @files);
 
 Extracts the specified files (or all files if not specified)
 into the specified directory.
 
-Returns a list of the directory
+In list context this returns a list of the directory
 (which may be a subdirectory of the C<$dir> passed in)
 and the files extracted (in native OS (on-disk) format).
+
+In scalar context just the directory is returned.
 
 =cut
 
@@ -132,7 +135,7 @@ sub extract_into {
     push(@disk_files, $full_path);
   }
 
-  return ($dir, @disk_files);
+  return (wantarray ? ($dir, @disk_files) : $dir);
 }
 
 =method file_content
@@ -388,13 +391,19 @@ sub perl_files {
 
 =method physical_directory
 
-  $dir = $dist->physical_directory(@files);
+  $dir = $dist->physical_directory();
+  ($dir, @dir_files) = $dist->physical_directory(@files);
 
 Returns the path to a physical directory on the disk
-where the specified files can be found.
+where the specified files (if any) can be found.
 
 For in-memory formats this will make a temporary directory
 and write the specified files (or all files) into it.
+
+The return value is the same as L</extract_into>:
+In scalar context the path to the directory is returned.
+In list context the (possibly adjusted) paths to any specified files
+are appended to the return value.
 
 =cut
 
