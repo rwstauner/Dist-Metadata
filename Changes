@@ -7,6 +7,8 @@ Revision history for Dist-Metadata
     (Thanks to thaljef for reporting.)
 
   [Fixes]
+  - Always include inc/, t/, and xt/ in meta/no_index.
+    (Thanks to thaljef for reporting.)
   - Make return value of Dir::physical_directory() consistent with
     other subclasses.
 

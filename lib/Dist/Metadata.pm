@@ -222,6 +222,7 @@ sub load_meta {
   my $dist  = $self->dist;
   my @files = $dist->list_files;
   my ( $meta, $metafile );
+  my $default_meta = $self->determine_metadata;
 
   # prefer json file (spec v2)
   if ( $metafile = first { m#^META\.json$# } @files ) {
@@ -233,7 +234,16 @@ sub load_meta {
   }
   # no META file found in dist
   else {
-    $meta = $self->meta_from_struct( $self->determine_metadata );
+    $meta = $self->meta_from_struct( $default_meta );
+  }
+
+  {
+    # always inlude (never index) the default no_index dirs
+    my $dir = ($meta->{no_index} ||= {})->{directory} ||= [];
+    my %seen = map { ($_ => 1) } @$dir;
+    unshift @$dir,
+      grep { !$seen{$_}++ }
+          @{ $default_meta->{no_index}->{directory} };
   }
 
   # Something has to be indexed, so if META has no (or empty) 'provides'
