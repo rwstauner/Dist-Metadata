@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [Enhancements]
+  - Support zip archives (in addition to tar files).
+    (Thanks to thaljef for reporting.)
+
 0.915     2011-08-16T18:52:01Z
 
   - Remove warning for no packages found (thaljef).
