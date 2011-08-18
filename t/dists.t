@@ -36,6 +36,22 @@ foreach my $test  (
   ],
   [
     [
+      metafile_incomplete =>
+      'Dist-Metadata-Test-MetaFile-Incomplete-2.1',
+    ],
+    {
+      name     => 'Dist-Metadata-Test-MetaFile-Incomplete',
+      version  => '2.1',
+      provides => {
+        'Dist::Metadata::Test::MetaFile::Incomplete' => {
+          file    => 'lib/Dist/Metadata/Test/MetaFile/Incomplete.pm',
+          version => '2.1',
+        },
+      },
+    },
+  ],
+  [
+    [
       nometafile =>
       'Dist-Metadata-Test-NoMetaFile-0.1',
     ],

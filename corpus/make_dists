@@ -17,6 +17,9 @@ my $dists = {
   metafile => {
     dir  => 'Dist-Metadata-Test-MetaFile-2.2',
   },
+  metafile_incomplete => {
+    dir  => 'Dist-Metadata-Test-MetaFile-Incomplete-2.1',
+  },
   nometafile => {
     dir  => 'Dist-Metadata-Test-NoMetaFile-0.1',
   },
