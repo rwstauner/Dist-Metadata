@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  [API Change]
+  - Dist::extract_into() and Dist::physical_directory() now return just $dir
+    in scalar context (and continue to return ($dir, @files) in list context)
+
   [Enhancements]
   - Support zip archives (in addition to tar files).
     (Thanks to thaljef for reporting.)
@@ -11,10 +15,6 @@ Revision history for Dist-Metadata
     (Thanks to thaljef for reporting.)
   - Make return value of Dir::physical_directory() consistent with
     other subclasses.
-
-  [API Change]
-  - Dist::extract_into() and Dist::physical_directory() now return just $dir
-    in scalar context (and continue to return ($dir, @files) in list context)
 
 0.915     2011-08-16T18:52:01Z
 
