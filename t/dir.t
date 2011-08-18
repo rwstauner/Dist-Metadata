@@ -30,12 +30,14 @@ eval "require $mod" or die $@;
 # file_content
 # find_files
 # physical_directory
+
 {
-  my $dir = dir( qw(corpus noroot) )->stringify;
+  # with no root dir
+  my $path = dir( qw(corpus noroot) );
+  my $dir  = $path->stringify;
   my $dist = new_ok( $mod, [ dir => $dir ] );
 
-  is( $dist->dir, $dir, 'dir attribute from constructor arg' );
-  is( $dist->physical_directory, $dir, 'dir attribute from constructor arg' );
+  test_phys_dir($dist, $dir, $path);
 
   my @files = (
     file( qw(lib Dist Metadata Test NoRoot PM.pm) )->stringify,
@@ -43,19 +45,29 @@ eval "require $mod" or die $@;
     'README'
   );
 
-  is(
-    $dist->file_content('README'),
-    qq[This "dist" is for testing Dist::Metadata.\n],
-    'file content'
+  # no root, same as below
+  is_deeply([sort $dist->find_files], [sort @files], 'all files listed (full paths)');
+  # root stripped
+  is_deeply([sort $dist->list_files], [sort @files], 'all files listed (no root)');
+}
+# with root dir
+{
+  my $path = dir( qw(corpus subdir) );
+  my $dir  = $path->stringify;
+  my $dist = new_ok( $mod, [ dir => $dir ] );
+
+  test_phys_dir($dist, $dir, $path->subdir($dist->root));
+
+  my @files = (
+    file( qw(lib Dist Metadata Test SubDir PM.pm) )->stringify,
+    file( qw(lib Dist Metadata Test SubDir.pm) )->stringify,
+    'README'
   );
 
-  like(
-    exception { $dist->file_content('missing.file') },
-    qr{Failed to open file 'corpus.+noroot.+missing\.file':},
-    'die on missing file'
-  );
-
-  is_deeply([sort $dist->find_files], [sort @files], 'all files listed');
+  # root present
+  is_deeply([sort $dist->find_files], [sort map { file($dist->root, $_)->stringify } @files], 'all files listed (full paths)');
+  # root stripped
+  is_deeply([sort $dist->list_files], [sort @files], 'all files listed (no root)');
 }
 
 # determine_name_and_version
@@ -74,3 +86,30 @@ eval "require $mod" or die $@;
 }
 
 done_testing;
+
+sub test_phys_dir {
+  my ($dist, $dir, $subroot) = @_;
+  $subroot = $subroot->absolute;
+
+  is( $dist->dir, $dir, 'dir attribute from constructor arg' );
+  is( $dist->physical_directory, $subroot, 'dir + root' );
+
+  is_deeply(
+    [$dist->physical_directory('README')],
+    [$subroot,  $subroot->file('README')],
+    'physical directory with adjusted file'
+  );
+
+  is(
+    $dist->file_content('README'),
+    qq[This "dist" is for testing Dist::Metadata.\n],
+    'file content'
+  );
+
+  like(
+    exception { $dist->file_content('missing.file') },
+    qr{Failed to open file 'corpus.+\w+.+missing\.file':},
+    'die on missing file'
+  );
+
+}
