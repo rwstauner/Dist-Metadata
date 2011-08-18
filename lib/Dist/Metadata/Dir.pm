@@ -116,13 +116,20 @@ containing the desired files.
 =cut
 
 sub physical_directory {
-  my ($self) = @_;
+  my ($self, @files) = @_;
 
+  # TODO: return absolute_path?
+  my @parts = $self->{dir};
   # go into root dir if there is one
-  return $self->path_class_dir->new($self->{dir}, $self->{root})->stringify
-    if $self->{root};
+  push @parts, $self->root
+    if $self->root;
 
-  return $self->{dir};
+  my $dir = $self->path_class_dir->new(@parts)->absolute;
+
+  return $dir->stringify unless wantarray;
+
+  return map { $_->stringify }
+    ($dir, map { $dir->file( $_ ) } @files);
 }
 
 1;
