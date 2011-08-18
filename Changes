@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.920     2011-08-18T04:11:45Z
+
   [API Change]
   - Dist::extract_into() and Dist::physical_directory() now return just $dir
     in scalar context (and continue to return ($dir, @files) in list context)
