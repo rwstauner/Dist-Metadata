@@ -192,7 +192,13 @@ sub determine_packages {
   # if not passed in, use defaults (we just want the 'no_index' property)
   $meta ||= $self->meta_from_struct( $self->determine_metadata );
 
-  my @files = grep { $meta->should_index_file( $_ ) } $self->dist->perl_files;
+  # should_index_file() expects unix paths
+  my @files = grep {
+    $meta->should_index_file(
+      $self->dist->path_classify_file($_)->as_foreign('Unix')->stringify
+    );
+  }
+    $self->dist->perl_files;
 
   # TODO: should we limit packages to lib/ if it exists?
   # my @lib = grep { m#^lib/# } @files; @files = @lib if @lib;
