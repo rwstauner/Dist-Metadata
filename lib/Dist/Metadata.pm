@@ -120,7 +120,11 @@ sub default_metadata {
       url     => 'http://search.cpan.org/perldoc?CPAN::Meta::Spec',
     },
     name           => UNKNOWN,
-    release_status => 'stable',
+
+    # strictly speaking, release_status is also required but
+    # CPAN::Meta will figure it out based on the version number.  if
+    # we were to set it explicitly, then we would first need to
+    # examine the version number for '_' or 'TRIAL' or 'RC' etc.
     version        => 0,
 
     # optional
