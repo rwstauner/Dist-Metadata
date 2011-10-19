@@ -23,6 +23,9 @@ my $dists = {
   nometafile => {
     dir  => 'Dist-Metadata-Test-NoMetaFile-0.1',
   },
+  nometafile_dev_release => {
+    dir  => 'Dist-Metadata-Test-NoMetaFile-DevRelease-0.1_1',
+  },
   subdir => {
     dir  => 'Dist-Metadata-Test-SubDir-1.5',
     cd   => 'subdir',

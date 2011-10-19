@@ -70,6 +70,22 @@ foreach my $test  (
       },
     },
   ],
+[
+    [
+      nometafile_dev_release =>
+      'Dist-Metadata-Test-NoMetaFile-DevRelease-0.1_1',
+    ],
+    {
+      name     => 'Dist-Metadata-Test-NoMetaFile-DevRelease',
+      version  => '0.1_1',
+      provides => {
+        'Dist::Metadata::Test::NoMetaFile::DevRelease' => {
+          file    => 'lib/Dist/Metadata/Test/NoMetaFile/DevRelease.pm',
+          version => '0.1_1',
+        },
+      },
+    },
+  ],
   [
     [
       subdir =>
