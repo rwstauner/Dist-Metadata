@@ -18,6 +18,7 @@ Test::MockObject->new->fake_module('CPAN::Meta',
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
+$Dist::Metadata::VERSION ||= 0; # quiet warnings
 
 foreach my $test (
   [ json => j => { 'META.json' => 'j' } ],

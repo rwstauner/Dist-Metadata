@@ -125,6 +125,7 @@ sub default_metadata {
     # CPAN::Meta will figure it out based on the version number.  if
     # we were to set it explicitly, then we would first need to
     # examine the version number for '_' or 'TRIAL' or 'RC' etc.
+
     version        => 0,
 
     # optional

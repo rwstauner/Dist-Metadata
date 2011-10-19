@@ -5,6 +5,7 @@ use Path::Class qw( foreign_file );
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
+$Dist::Metadata::VERSION ||= 0; # quiet warnings
 
 # specifically test that expected paths are not indexed on various platforms
 foreach my $spec ( qw(Unix Win32 Mac) ){
