@@ -2,6 +2,12 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.922     2011-10-19T22:30:53Z
+
+  - Let CPAN::Meta set release_status instead of defaulting to 'stable'.
+    Fixes an issue with dev/alpha versions.
+    Thanks to Jeffrey Ryan Thalhammer (thaljef) for reporting and fixing.
+
 0.921     2011-09-09T23:10:21Z
 
   - Fix 'no_index' checking with non-unix paths.
