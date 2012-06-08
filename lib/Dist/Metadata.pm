@@ -47,6 +47,11 @@ Other options that can be specified:
 C<determine_packages> - boolean to indicate whether dist should be searched
 for packages if no META file is found.  Defaults to true.
 
+=item *
+
+C<like_pause> - boolean to indicate whether packages should be determined
+similar to the way PAUSE does it.  Defaults to false.
+
 =end :list
 
 =cut
@@ -177,6 +182,9 @@ Attempt to determine packages provided by the dist.
 This is used when the META file does not include a C<provides>
 section and C<determine_packages> is not set to false in the constructor.
 
+If C<like_pause> has been set to true in the constructor, packages
+will be determined as PAUSE does it, which ignores packages that do
+not match the name of the containing file.
 
 If a L<CPAN::Meta> object is not provided a default one will be used.
 Files contained in the dist and packages found therein will be checked against
@@ -216,6 +224,19 @@ sub determine_packages {
   foreach my $pack ( keys %$packages ) {
     delete $packages->{$pack}
       if !$meta->should_index_package($pack);
+
+    if ($self->{like_pause}) {
+
+      # PAUSE only considers packages that match the basename of the
+      # containing file.  For example, file Foo.pm may only contain a
+      # package that matches /\bFoo$/.  This is what PAUSE calls a
+      # "simile".  All other packages in the file will be ignored.
+
+      my $file = $packages->{$pack}->{file};
+      $file    = (split '/', $file)[-1];  # Get basename
+      $file    =~ s{\.pm(\.PL)?$}{};      # Remove extension(s)
+      delete $packages->{$pack} unless $pack =~ m{\b\Q$file\E$};
+    }
   }
 
   return $packages;

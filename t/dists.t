@@ -71,6 +71,50 @@ foreach my $test  (
       },
     },
   ],
+
+ [
+    [
+      index_like_pause  => 'Dist-Metadata-Test-LikePause-0.1',
+    ],
+    {
+      name     => 'Dist-Metadata-Test-LikePause',
+      version  => '0.1',
+      provides => {
+        'Dist::Metadata::Test::LikePause' => {
+          file    => 'lib/Dist/Metadata/Test/LikePause.pm',
+          version => '0.1',
+        },
+      },
+    },
+    {
+      like_pause => 1,
+    },
+  ],
+
+ [
+    [
+      index_like_pause  => 'Dist-Metadata-Test-LikePause-0.1',
+    ],
+    {
+      name     => 'Dist-Metadata-Test-LikePause',
+      version  => '0.1',
+      provides => {
+        'Dist::Metadata::Test::LikePause' => {
+          file    => 'lib/Dist/Metadata/Test/LikePause.pm',
+          version => '0.1',
+        },
+        'ExtraPackage' => {
+          file    => 'lib/Dist/Metadata/Test/LikePause.pm',
+          version => '0.2',
+        },
+      },
+    },
+    {
+      # Without the like_pause flag, we should find the Extra package
+      like_pause => 0,
+    },
+  ],
+
   [
     [
       nometafile_dev_release =>
@@ -127,7 +171,7 @@ foreach my $test  (
     },
   ],
 ){
-  my ( $dists, $exp ) = @$test;
+  my ( $dists, $exp, $opts ) = @$test;
   $exp->{package_versions} = do {
     my $p = $exp->{provides};
     +{ map { ($_ => $p->{$_}{version}) } keys %$p };
@@ -137,12 +181,14 @@ foreach my $test  (
     unless ref $dists;
 
   my ($key, $file, $dir) = @$dists;
-  
+
   $dir ||= $file;
   $_ = "corpus/$_" for ($file, $dir);
 
   $_ = file($root, $_)->stringify
     for @$dists;
+
+
 
   foreach my $args (
     [file => "$file.tar.gz"],
@@ -150,6 +196,9 @@ foreach my $test  (
     [dir  => $dir],
     [struct => { files => $structs->{$key} }],
   ){
+
+    push @{ $args }, %{ $opts || {} };
+
     my $dm = new_ok( $mod, $args );
     # minimal name can be determined from file or dir but not struct
     $exp->{name} = Dist::Metadata::UNKNOWN() if $key eq 'noroot' && $args->[0] eq 'struct';

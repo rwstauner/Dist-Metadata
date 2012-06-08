@@ -26,6 +26,9 @@ my $dists = {
   nometafile_dev_release => {
     dir  => 'Dist-Metadata-Test-NoMetaFile-DevRelease-0.1_1',
   },
+  index_like_pause => {
+    dir  => 'Dist-Metadata-Test-LikePause-0.1',
+  },
   subdir => {
     dir  => 'Dist-Metadata-Test-SubDir-1.5',
     cd   => 'subdir',
