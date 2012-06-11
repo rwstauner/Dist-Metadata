@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Add 'like_pause' option for filtering out provided packages
+    that don't match the file basename, similar to the way PAUSE
+    does it.  Thanks Jeffrey Ryan Thalhammer!
+
 0.922     2011-10-19T22:30:53Z
 
   - Let CPAN::Meta set release_status instead of defaulting to 'stable'.
