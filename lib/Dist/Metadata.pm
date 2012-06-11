@@ -227,17 +227,16 @@ sub determine_packages {
     delete $packages->{$pack}
       if !$meta->should_index_package($pack);
 
-    if ($self->{like_pause}) {
-
+    if( $self->{like_pause} ){
       # PAUSE only considers packages that match the basename of the
       # containing file.  For example, file Foo.pm may only contain a
       # package that matches /\bFoo$/.  This is what PAUSE calls a
       # "simile".  All other packages in the file will be ignored.
 
-      my $file = $packages->{$pack}->{file};
-      $file    = (split '/', $file)[-1];  # Get basename
-      $file    =~ s{\.pm(\.PL)?$}{};      # Remove extension(s)
-      delete $packages->{$pack} unless $pack =~ m{\b\Q$file\E$};
+      # capture file basename (without the extension)
+      my ($base) = ($packages->{$pack}->{file} =~ m!([^/]+)\.pm(?:\.PL)?$!);
+      delete $packages->{$pack}
+        if $pack !~ m{\b\Q$base\E$};
     }
   }
 
