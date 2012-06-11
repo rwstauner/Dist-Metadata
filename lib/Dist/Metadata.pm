@@ -50,7 +50,9 @@ for packages if no META file is found.  Defaults to true.
 =item *
 
 C<like_pause> - boolean to indicate whether packages should be determined
-similar to the way PAUSE does it.  Defaults to false.
+similar to the way PAUSE does it.  This filters out packages that don't
+match the file basename (like `Foo::Bar` matches `*/Bar.pm`).
+Defaults to false.
 
 =end :list
 
