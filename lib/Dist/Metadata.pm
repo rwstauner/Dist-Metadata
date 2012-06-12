@@ -235,8 +235,9 @@ sub determine_packages {
 
       # capture file basename (without the extension)
       my ($base) = ($packages->{$pack}->{file} =~ m!([^/]+)\.pm(?:\.PL)?$!);
+      # remove if file didn't match regexp or package doesn't match basename
       delete $packages->{$pack}
-        if $pack !~ m{\b\Q$base\E$};
+        if !$base || $pack !~ m{\b\Q$base\E$};
     }
   }
 
