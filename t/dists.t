@@ -209,9 +209,14 @@ foreach my $test  (
     # #     Structures begin differing at:
     # #          $got = HASH(0x11c22d0)
     # #     $expected = undef
-    is_deeply( $dm->$_, $exp->{$_}, "verify $_ for @$args" ) || diag explain [$dm, $_, $exp]
+    is_deeply( $dm->$_, $exp->{$_}, "verify $_ for @$args" ) || dump_if_automated([$dm, $_, $exp])
       for keys %$exp;
   }
 }
 
 done_testing;
+
+sub dump_if_automated {
+  diag(explain(@_))
+    if $ENV{AUTOMATED_TESTING};
+}
