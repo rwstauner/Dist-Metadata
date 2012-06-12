@@ -2,8 +2,12 @@ use strict;
 use warnings;
 use Test::More 0.96;
 
-my $mod = 'Dist::Metadata::Struct';
-eval "require $mod" or die $@;
+my $mod = 'Dist::Metadata';
+my $smod = "${mod}::Struct";
+eval "require $_" || die $@
+  for $mod, $smod;
+
+$Dist::Metadata::VERSION ||= 0; # avoid undef warnings
 
 {
   foreach my $test (
@@ -44,7 +48,7 @@ eval "require $mod" or die $@;
     $att ||= $parsed;
     # test dir name and tar file name
     foreach my $path ( $base, "$base.tar.gz", "$base.tgz" ){
-      my $dm = new_ok($mod, [files => {}, @$args]);
+      my $dm = new_ok($smod, [files => {}, @$args]);
 
       my @nv = $dm->parse_name_and_version($path);
       is_deeply(\@nv, $parsed, 'parsed name and version');
@@ -53,6 +57,49 @@ eval "require $mod" or die $@;
       is_deeply([$dm->name, $dm->version], $att, "set dist name and version");
     }
   }
+}
+
+{
+  my $struct = {
+    files => {
+      'README' => 'we need a file to establish the root dir',
+      'lib/Bunnies.pm' => <<'BUNNIES',
+package Bunnies;
+our $VERSION = 2.3;
+
+package # comment
+  HiddenBunnies;
+our $VERSION = 2.4;
+
+package TooManyBunnies;
+our $VERSION = 2.5;
+BUNNIES
+      # Test something that doesn't match the "simile" regexp in DM:determine_packages.
+      # Module::Metadata 1.000009 will find this but for obvious reasons PAUSE would not index it.
+      # If MM stops finding this we'll have to determine if there are
+      # any other possible file names that wouldn't match the regexp.
+      'lib/.pm' => <<'GOOFY',
+package Goofy;
+our $VERSION = '0.1';
+GOOFY
+    },
+  };
+
+  is_deeply
+    new_ok($mod, [struct => $struct])->determine_packages,
+    {
+      Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
+      TooManyBunnies => { file => 'lib/Bunnies.pm', version => '2.5', },
+      Goofy          => { file => 'lib/.pm',        version => '0.1', },
+    },
+    'determine all (not hidden) packages';
+
+  is_deeply
+    new_ok($mod, [struct => $struct, like_pause => 1])->determine_packages,
+    {
+      Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
+    },
+    'determine only "simile" packages';
 }
 
 done_testing;
