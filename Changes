@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.923     2012-06-19T03:13:55Z
+
   - By default, when determining packages, filter out packages
     that don't match the file name (ones that can't be loaded via use/require).
     This mimics the behavior of PAUSE.
