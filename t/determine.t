@@ -74,6 +74,13 @@ our $VERSION = 2.4;
 package TooManyBunnies;
 our $VERSION = 2.5;
 BUNNIES
+      'lib/Rabbit/Hole.pm' => <<'HOLE',
+package Rabbit::Hole;
+our $VERSION = '1.1';
+
+package Rabbit::Hole::Cover;
+our $VERSION = '1.1';
+HOLE
       # Test something that doesn't match the "simile" regexp in DM:determine_packages.
       # Module::Metadata 1.000009 will find this but for obvious reasons PAUSE would not index it.
       # If MM stops finding this we'll have to determine if there are
@@ -91,6 +98,8 @@ GOOFY
       Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
       TooManyBunnies => { file => 'lib/Bunnies.pm', version => '2.5', },
       Goofy          => { file => 'lib/.pm',        version => '0.1', },
+      'Rabbit::Hole' => { file => 'lib/Rabbit/Hole.pm', version => '1.1' },
+      'Rabbit::Hole::Cover' => { file => 'lib/Rabbit/Hole.pm', version => '1.1' },
     },
     'determine all (not hidden) packages';
 
@@ -98,8 +107,23 @@ GOOFY
     new_ok($mod, [struct => $struct, like_pause => 1])->determine_packages,
     {
       Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
+      'Rabbit::Hole' => { file => 'lib/Rabbit/Hole.pm', version => '1.1' },
     },
     'determine only "simile" packages';
+
+  {
+    my $dm = new_ok($mod, [struct => $struct, like_pause => 1]);
+    my $cpan_meta = $dm->default_metadata;
+    push @{ $cpan_meta->{no_index}{namespace} ||= [] }, 'Rabbit'; # this is only about bunnies
+
+    is_deeply
+      $dm->determine_packages($dm->meta_from_struct($cpan_meta)),
+      {
+        Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
+      },
+      'determine only loadable modules, minus no_index/namespace';
+  }
+
 }
 
 done_testing;
