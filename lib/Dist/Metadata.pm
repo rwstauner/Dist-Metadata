@@ -222,10 +222,14 @@ sub determine_packages {
 
   my $packages = $self->dist->determine_packages(@files);
 
-  # remove any packages that should not be indexed
+
   foreach my $pack ( keys %$packages ) {
-    delete $packages->{$pack}
-      if !$meta->should_index_package($pack);
+
+    # Remove any packages that should not be indexed
+    if ( !$meta->should_index_package($pack) ) {
+      delete $packages->{$pack};
+      next;
+    }
 
     if( $self->{like_pause} ){
       # PAUSE only considers packages that match the basename of the
