@@ -93,7 +93,7 @@ GOOFY
   };
 
   is_deeply
-    new_ok($mod, [struct => $struct])->determine_packages,
+    new_ok($mod, [struct => $struct, include_inner_packages => 1])->determine_packages,
     {
       Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
       TooManyBunnies => { file => 'lib/Bunnies.pm', version => '2.5', },
@@ -104,7 +104,7 @@ GOOFY
     'determine all (not hidden) packages';
 
   is_deeply
-    new_ok($mod, [struct => $struct, like_pause => 1])->determine_packages,
+    new_ok($mod, [struct => $struct])->determine_packages,
     {
       Bunnies        => { file => 'lib/Bunnies.pm', version => '2.3', },
       'Rabbit::Hole' => { file => 'lib/Rabbit/Hole.pm', version => '1.1' },
@@ -112,7 +112,7 @@ GOOFY
     'determine only "simile" packages';
 
   {
-    my $dm = new_ok($mod, [struct => $struct, like_pause => 1]);
+    my $dm = new_ok($mod, [struct => $struct]);
     my $cpan_meta = $dm->default_metadata;
     push @{ $cpan_meta->{no_index}{namespace} ||= [] }, 'Rabbit'; # this is only about bunnies
 

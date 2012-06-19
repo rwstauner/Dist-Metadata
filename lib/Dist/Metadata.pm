@@ -49,10 +49,14 @@ for packages if no META file is found.  Defaults to true.
 
 =item *
 
-C<like_pause> - boolean to indicate whether packages should be determined
-similar to the way PAUSE does it.  This filters out packages that don't
-match the file basename (like `Foo::Bar` matches `*/Bar.pm`).
-Defaults to false.
+C<include_inner_packages> - When determining provided packages
+the default behavior is to only include packages that match the name
+of the file that defines them (like C<Foo::Bar> matches C<*/Bar.pm>).
+This way only modules that can be loaded (via C<use> or C<require>)
+will be returned (and "inner" packages will be ignored).
+This mimics the behavior of PAUSE.
+Set this to true to include any "inner" packages provided by the dist
+(that are not otherwise excluded by another mechanism (such as C<no_index>)).
 
 =end :list
 
@@ -184,10 +188,6 @@ Attempt to determine packages provided by the dist.
 This is used when the META file does not include a C<provides>
 section and C<determine_packages> is not set to false in the constructor.
 
-If C<like_pause> has been set to true in the constructor, packages
-will be determined as PAUSE does it, which ignores packages that do
-not match the name of the containing file.
-
 If a L<CPAN::Meta> object is not provided a default one will be used.
 Files contained in the dist and packages found therein will be checked against
 the meta object's C<no_index> attribute
@@ -231,7 +231,7 @@ sub determine_packages {
       next;
     }
 
-    if( $self->{like_pause} ){
+    unless( $self->{include_inner_packages} ){
       # PAUSE only considers packages that match the basename of the
       # containing file.  For example, file Foo.pm may only contain a
       # package that matches /\bFoo$/.  This is what PAUSE calls a

@@ -4,7 +4,7 @@ package Dist::Metadata::Test::LikePause;
 
 our $VERSION = '0.1';
 
-# This package should be excluded if like_pause => 1
+# This should be excluded unless "include_inner_packages" is true
 package ExtraPackage;
 
 our $VERSION = '0.2';

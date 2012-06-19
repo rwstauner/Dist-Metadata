@@ -2,9 +2,13 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
-  - Add 'like_pause' option for filtering out provided packages
-    that don't match the file basename, similar to the way PAUSE
-    does it.  Thanks Jeffrey Ryan Thalhammer!
+  - By default, when determining packages, filter out packages
+    that don't match the file name (ones that can't be loaded via use/require).
+    This mimics the behavior of PAUSE.
+    If you want the old behavior of including "inner" packages in the meta
+    "provides" set "include_inner_packages" to true in the constructor.
+    Thanks to Jeffrey Ryan Thalhammer for finding and fixing this
+    (and including tests)!
 
 0.922     2011-10-19T22:30:53Z
 

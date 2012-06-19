@@ -86,9 +86,6 @@ foreach my $test  (
         },
       },
     },
-    {
-      like_pause => 1,
-    },
   ],
 
  [
@@ -110,8 +107,8 @@ foreach my $test  (
       },
     },
     {
-      # Without the like_pause flag, we should find the Extra package
-      like_pause => 0,
+      # this we should find the Extra (inner) package
+      include_inner_packages => 1,
     },
   ],
 
