@@ -150,6 +150,37 @@ sub file_content {
   croak q[Method 'file_content' not defined];
 }
 
+=method file_checksum
+
+  $dist->file_checksum('lib/Mod/Name.pm', 'sha256');
+
+Returns a checksum (hex digest) of the file content.
+
+The L<Digest> module is used to generate the checksums.
+The value specified should be one accepted by C<< Digest->new >>.
+A small effort is made to translate simpler names like
+C<md5> into C<MD5> and C<sha1> into C<SHA-1>
+(which are the names L<Digest> expects).
+
+If the type of checksum is not specified C<md5> will be used.
+
+=cut
+
+sub file_checksum {
+  my ($self, $file, $type) = @_;
+  $type ||= 'md5';
+
+  require Digest; # core
+
+  # md5 => MD5, sha256 => SHA-256
+  (my $impl = uc $type) =~ s/^(SHA|CRC)([0-9]+)$/$1-$2/;
+
+  my $digest = Digest->new($impl);
+
+  $digest->add( $self->file_content($file) );
+  return $digest->hexdigest;
+}
+
 =method find_files
 
 Determine the files contained in the dist.
