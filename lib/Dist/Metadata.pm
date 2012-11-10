@@ -124,7 +124,7 @@ sub default_metadata {
     abstract       => UNKNOWN,
     author         => [],
     dynamic_config => 0,
-    generated_by   => ( ref($self) || $self ) . ' version ' . $self->VERSION,
+    generated_by   => ( ref($self) || $self ) . ' version ' . ( $self->VERSION || 0 ),
     license        => ['unknown'], # this 'unknown' comes from CPAN::Meta::Spec
     'meta-spec'    => {
       version => '2',
