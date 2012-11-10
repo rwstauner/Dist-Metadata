@@ -2,6 +2,11 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Add 'module_info' method for getting additional data (like checksums)
+    with the provided module hashref.  Thanks to Jeffrey Ryan Thalhammer
+    for the suggestion.
+  - Add 'file_checksum' method to the Dist::Metadata::Dist base class.
+
 0.923     2012-06-19T03:13:55Z
 
   - By default, when determining packages, filter out packages
