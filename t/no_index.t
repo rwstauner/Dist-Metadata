@@ -10,7 +10,7 @@ $Dist::Metadata::VERSION ||= 0; # quiet warnings
 # specifically test that expected paths are not indexed on various platforms
 foreach my $spec ( qw(Unix Win32 Mac) ){
   my $dm = new_ok($mod, [struct => {
-    file_spec => $spec, 
+    file_spec => $spec,
     files => {
       README => 'nevermind',
       foreign_file($spec => qw(lib Mod Name.pm)) => "package Mod::Name;\nour \$VERSION = 0.11;",
