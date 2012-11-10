@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.924     2012-11-10T17:38:33Z
+
   - Add 'module_info' method for getting additional data (like checksums)
     with the provided module hashref.  Thanks to Jeffrey Ryan Thalhammer
     for the suggestion.
