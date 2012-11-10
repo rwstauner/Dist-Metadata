@@ -7,7 +7,7 @@ my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
 
 test_module_info(
-  'Dist-Metadata-Test-NoMetaFile-0.1',
+  [file => 'corpus/Dist-Metadata-Test-NoMetaFile-0.1.tar.gz'],
   {
     'Dist::Metadata::Test::NoMetaFile' => {
       file    => 'lib/Dist/Metadata/Test/NoMetaFile.pm',
@@ -27,7 +27,7 @@ test_module_info(
 );
 
 test_module_info(
-  'Dist-Metadata-Test-MetaFile-2.2',
+  [file => 'corpus/Dist-Metadata-Test-MetaFile-2.2.zip'],
   {
     'Dist::Metadata::Test::MetaFile' => {
       file    => 'lib/Dist/Metadata/Test/MetaFile.pm',
@@ -46,11 +46,54 @@ test_module_info(
   }
 );
 
+{
+  my $args = [
+    struct => {
+      files => {
+        'fb/lib/Foo/Bar.pm' => "package Foo::Bar;\nour \$VERSION = 13;\n",
+        'fb/README.txt'     => "anything\n",
+      }
+    }
+  ];
+  my $exp = {
+    'Foo::Bar' => {
+      file    => 'lib/Foo/Bar.pm',
+      version => '13',
+      md5     => '8642ef750b6ca0d9c9afe5db4174e009',
+      sha1    => '2a4899cefacd1defd114731fec0e58c747eb9471',
+      sha256  => '368e2f18d80a866537153885807ddf6e0733168b683b0a7ecac6d257943ac894',
+    },
+  };
+
+  test_module_info($args, $exp);
+
+  my $dm = new_ok($mod => $args);
+  my $provides = {
+    'Who::Cares' => {
+      file      => 'README.txt',
+      version   => 0,
+    },
+  };
+
+  # specify our own 'provides'
+  my $mi = $dm->module_info({digest => ['MD5', 'SHA-256'], provides => $provides});
+
+  # use official names
+  my $checksums = {
+    'MD5'     => 'f5b1321af715fbd4866590170ddbe8f6',
+    'SHA-256' => 'ce32b18ae7f79e70f7cde4cf6077ae8b4195044307a78a4ea8761ddfedf9badc',
+  };
+
+  @{ $provides->{'Who::Cares'} }{ keys %$checksums } = values %$checksums;
+
+  is_deeply $provides, $mi, 'module info with official checksum names';
+}
+
 done_testing;
 
 sub test_module_info {
-  my ($file, $info) = @_;
-  my $dm = new_ok($mod => [file => "corpus/$file.tar.gz"]);
+  my ($args, $info) = @_;
+  my $dm = new_ok($mod => $args);
 
   my $p = $dm->provides;
   {
