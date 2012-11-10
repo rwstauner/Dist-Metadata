@@ -344,6 +344,72 @@ sub package_versions {
   };
 }
 
+=method module_info
+
+Returns a hashref of meta data for each of the packages provided by this dist.
+
+The hashref starts with the same data as L</provides>
+but additional data can be added to the output by specifying options in a hashref:
+
+=begin :list
+
+= C<checksum>
+
+Use the specified algorithm to compute a hex digest of the file.
+The type you specify will be the key in the returned hashref.
+You can use an arrayref to specify more than one type.
+
+  $dm->module_info({checksum => ['sha256', 'md5']});
+  # returns:
+  {
+    'Mod::Name' => {
+      file    => 'lib/Mod/Name.pm',
+      version => '0.1',
+      md5     => '258e88dcbd3cd44d8e7ab43f6ecb6af0',
+      sha256  => 'f22136124cd3e1d65a48487cecf310771b2fd1e83dc032e3d19724160ac0ff71',
+    },
+  }
+
+See L<Dist::Metadata::Dist/file_checksum> for more information.
+
+= C<provides>
+
+The default is to start with the hashref returned from L</provides>
+but you can pass in an alternate hashref using this key.
+
+=end :list
+
+Other options may be added in the future.
+
+=cut
+
+sub module_info {
+  my ($self, $opts) = @_;
+  my $provides = $opts->{provides} || $self->provides;
+  $provides = { %$provides }; # break reference
+
+  my $checksums = $opts->{checksum} || $opts->{digest} || [];
+  $checksums = [ $checksums ]
+    unless ref($checksums) eq 'ARRAY';
+
+  my $digest_cache = {};
+  foreach my $mod ( keys %$provides ){
+    my $data = { %{ $provides->{ $mod } } }; # break reference
+
+    foreach my $checksum ( @$checksums ){
+      $data->{ $checksum } =
+        $digest_cache->{ $data->{file} }->{ $checksum } ||=
+          $self->dist->file_checksum($data->{file}, $checksum);
+    }
+
+    # TODO: $opts->{callback}->($self, $mod, $data, sub { $self->dist->file_content($data->{file}) });
+
+    $provides->{ $mod } = $data;
+  }
+
+  return $provides;
+}
+
 =head1 INHERITED METHODS
 
 The following methods are available on this object
