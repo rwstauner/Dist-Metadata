@@ -2,12 +2,13 @@ use strict;
 use warnings;
 use Test::More 0.96;
 use Test::Fatal;
+use Path::Class;
 
 my $mod = 'Dist::Metadata';
 eval "require $mod" or die $@;
 
 test_module_info(
-  [file => 'corpus/Dist-Metadata-Test-NoMetaFile-0.1.tar.gz'],
+  [file => file(qw(corpus Dist-Metadata-Test-NoMetaFile-0.1.tar.gz))->stringify],
   {
     'Dist::Metadata::Test::NoMetaFile' => {
       file    => 'lib/Dist/Metadata/Test/NoMetaFile.pm',
@@ -27,7 +28,7 @@ test_module_info(
 );
 
 test_module_info(
-  [file => 'corpus/Dist-Metadata-Test-MetaFile-2.2.zip'],
+  [file => file(qw(corpus Dist-Metadata-Test-MetaFile-2.2.zip))->stringify],
   {
     'Dist::Metadata::Test::MetaFile' => {
       file    => 'lib/Dist/Metadata/Test/MetaFile.pm',
