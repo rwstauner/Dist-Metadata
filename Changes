@@ -2,6 +2,9 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Specify 1.03 as minimum required version of Digest
+    to ensure that it tries Digest::SHA.  Closes gh-6.
+
 0.924     2012-11-10T17:38:33Z
 
   - Add 'module_info' method for getting additional data (like checksums)
