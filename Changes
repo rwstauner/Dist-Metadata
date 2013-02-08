@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.925     2013-02-08T02:40:09Z
+
   - Specify 1.03 as minimum required version of Digest
     to ensure that it tries Digest::SHA.  Closes gh-6.
 
