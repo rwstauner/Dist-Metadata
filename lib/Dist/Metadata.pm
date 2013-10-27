@@ -276,7 +276,7 @@ sub load_meta {
   }
 
   {
-    # always inlude (never index) the default no_index dirs
+    # always include (never index) the default no_index dirs
     my $dir = ($meta->{no_index} ||= {})->{directory} ||= [];
     my %seen = map { ($_ => 1) } @$dir;
     unshift @$dir,
@@ -311,7 +311,7 @@ sub meta {
 
   $meta = $dm->meta_from_struct(\%struct);
 
-Passes the the provided C<\%struct> to L<CPAN::Meta/create>
+Passes the provided C<\%struct> to L<CPAN::Meta/create>
 and returns the result.
 
 =cut
