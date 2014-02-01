@@ -1,0 +1,253 @@
+# NAME
+
+Dist::Metadata - Information about a perl module distribution
+
+# VERSION
+
+version 0.926
+
+# SYNOPSIS
+
+    my $dist = Dist::Metadata->new(file => $path_to_archive);
+
+    my $description = sprintf "Dist %s (%s)", $dist->name, $dist->version;
+
+    my $provides = $dist->package_versions;
+    while( my ($package, $version) = each %$provides ){
+      print "$description includes $package $version\n";
+    }
+
+# DESCRIPTION
+
+This module provides an easy interface for getting various metadata
+about a Perl module distribution.
+
+It takes care of the common logic of:
+
+- reading a tar file ([Archive::Tar](https://metacpan.org/pod/Archive::Tar))
+- finding and reading the correct META file if the distribution contains one ([CPAN::Meta](https://metacpan.org/pod/CPAN::Meta))
+- and determining some of the metadata if there is no META file ([Module::Metadata](https://metacpan.org/pod/Module::Metadata), [CPAN::DistnameInfo](https://metacpan.org/pod/CPAN::DistnameInfo))
+
+This is mostly a wrapper around [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta) providing an easy interface
+to find and load the meta file from a `tar.gz` file.
+A dist can also be represented by a directory or merely a structure of data.
+
+If the dist does not contain a meta file
+the module will attempt to determine some of that data from the dist.
+
+__NOTE__: This interface is still being defined.
+Please submit any suggestions or concerns.
+
+# METHODS
+
+## new
+
+    Dist::Metadata->new(file => $path);
+
+A dist can be represented by
+a tar file,
+a directory,
+or a data structure.
+
+The format will be determined by the presence of the following options
+(checked in this order):
+
+- `struct` - hash of data to build a mock dist; See [Dist::Metadata::Struct](https://metacpan.org/pod/Dist::Metadata::Struct).
+- `dir` - path to the root directory of a dist
+- `file` - the path to a `.tar.gz` file
+
+You can also slyly pass in your own object as a `dist` parameter
+in which case this module will just use that.
+This can be useful if you need to use your own subclass
+(perhaps while developing a new format).
+
+Other options that can be specified:
+
+- `name` - dist name
+- `version` - dist version
+- `determine_packages` - boolean to indicate whether dist should be searched
+for packages if no META file is found.  Defaults to true.
+- `include_inner_packages` - When determining provided packages
+the default behavior is to only include packages that match the name
+of the file that defines them (like `Foo::Bar` matches `*/Bar.pm`).
+This way only modules that can be loaded (via `use` or `require`)
+will be returned (and "inner" packages will be ignored).
+This mimics the behavior of PAUSE.
+Set this to true to include any "inner" packages provided by the dist
+(that are not otherwise excluded by another mechanism (such as `no_index`)).
+
+## dist
+
+Returns the dist object (subclass of [Dist::Metadata::Dist](https://metacpan.org/pod/Dist::Metadata::Dist)).
+
+## default\_metadata
+
+Returns a hashref of default values
+used to initialize a [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta) object
+when a META file is not found.
+Called from ["determine\_metadata"](#determine_metadata).
+
+## determine\_metadata
+
+Examine the dist and try to determine metadata.
+Returns a hashref which can be passed to ["new" in CPAN::Meta](https://metacpan.org/pod/CPAN::Meta#new).
+This is used when the dist does not contain a META file.
+
+## determine\_packages
+
+    my $provides = $dm->determine_packages($meta);
+
+Attempt to determine packages provided by the dist.
+This is used when the META file does not include a `provides`
+section and `determine_packages` is not set to false in the constructor.
+
+If a [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta) object is not provided a default one will be used.
+Files contained in the dist and packages found therein will be checked against
+the meta object's `no_index` attribute
+(see ["should\_index\_file" in CPAN::Meta](https://metacpan.org/pod/CPAN::Meta#should_index_file)
+and  ["should\_index\_package" in CPAN::Meta](https://metacpan.org/pod/CPAN::Meta#should_index_package)).
+By default this ignores any files found in
+`inc/`,
+`t/`,
+or `xt/`
+directories.
+
+## load\_meta
+
+Loads the metadata from the ["dist"](#dist).
+
+## meta
+
+Returns the [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta) instance in use.
+
+## meta\_from\_struct
+
+    $meta = $dm->meta_from_struct(\%struct);
+
+Passes the provided `\%struct` to ["create" in CPAN::Meta](https://metacpan.org/pod/CPAN::Meta#create)
+and returns the result.
+
+## package\_versions
+
+    $pv = $dm->package_versions();
+    # { 'Package::Name' => '1.0', 'Module::2' => '2.1' }
+
+Returns a simplified version of `provides`:
+a hashref with package names as keys and versions as values.
+
+This can also be called as a class method
+which will operate on a passed in hashref.
+
+    $pv = Dist::Metadata->package_versions(\%provides);
+
+## module\_info
+
+Returns a hashref of meta data for each of the packages provided by this dist.
+
+The hashref starts with the same data as ["provides"](#provides)
+but additional data can be added to the output by specifying options in a hashref:
+
+- `checksum`
+
+    Use the specified algorithm to compute a hex digest of the file.
+    The type you specify will be the key in the returned hashref.
+    You can use an arrayref to specify more than one type.
+
+        $dm->module_info({checksum => ['sha256', 'md5']});
+        # returns:
+        {
+          'Mod::Name' => {
+            file    => 'lib/Mod/Name.pm',
+            version => '0.1',
+            md5     => '258e88dcbd3cd44d8e7ab43f6ecb6af0',
+            sha256  => 'f22136124cd3e1d65a48487cecf310771b2fd1e83dc032e3d19724160ac0ff71',
+          },
+        }
+
+    See ["file\_checksum" in Dist::Metadata::Dist](https://metacpan.org/pod/Dist::Metadata::Dist#file_checksum) for more information.
+
+- `provides`
+
+    The default is to start with the hashref returned from ["provides"](#provides)
+    but you can pass in an alternate hashref using this key.
+
+Other options may be added in the future.
+
+# INHERITED METHODS
+
+The following methods are available on this object
+and simply call the corresponding method on the [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta) object.
+
+-  name
+-  provides
+-  version
+
+# TODO
+
+- More tests
+- `trust_meta` option (to allow setting it to false)
+- Guess main module from dist name if no packages can be found
+- Determine abstract?
+- Add change log info ([CPAN::Changes](https://metacpan.org/pod/CPAN::Changes))?
+- Subclass as `CPAN::Dist::Metadata` just so that it has `CPAN` in the name?
+- Use [File::Find::Rule::Perl](https://metacpan.org/pod/File::Find::Rule::Perl)?
+
+# SEE ALSO
+
+## Dependencies
+
+- [CPAN::Meta](https://metacpan.org/pod/CPAN::Meta)
+- [Module::Metadata](https://metacpan.org/pod/Module::Metadata)
+- [CPAN::DistnameInfo](https://metacpan.org/pod/CPAN::DistnameInfo)
+
+## Related Modules
+
+- [MyCPAN::Indexer](https://metacpan.org/pod/MyCPAN::Indexer)
+- [CPAN::ParseDistribution](https://metacpan.org/pod/CPAN::ParseDistribution)
+
+# SUPPORT
+
+## Perldoc
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Dist::Metadata
+
+## Websites
+
+The following websites have more information about this module, and may be of help to you. As always,
+in addition to those websites please use your favorite search engine to discover more resources.
+
+- MetaCPAN
+
+    A modern, open-source CPAN search engine, useful to view POD in HTML format.
+
+    [http://metacpan.org/release/Dist-Metadata](http://metacpan.org/release/Dist-Metadata)
+
+## Bugs / Feature Requests
+
+Please report any bugs or feature requests by email to `bug-dist-metadata at rt.cpan.org`, or through
+the web interface at [http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Metadata](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Metadata). You will be automatically notified of any
+progress on the request by the system.
+
+## Source Code
+
+[https://github.com/rwstauner/Dist-Metadata](https://github.com/rwstauner/Dist-Metadata)
+
+    git clone https://github.com/rwstauner/Dist-Metadata.git
+
+# AUTHOR
+
+Randy Stauner <rwstauner@cpan.org>
+
+# CONTRIBUTORS
+
+- David Steinbrunner <dsteinbrunner@pobox.com>
+- Jeffrey Ryan Thalhammer <thaljef@cpan.org>
+
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2011 by Randy Stauner.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
