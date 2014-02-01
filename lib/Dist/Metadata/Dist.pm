@@ -251,7 +251,7 @@ Returns a list of the files in the dist starting at the dist root.
 
 This calls L</find_files> to get a listing of the contents of the dist,
 determines (and caches) the root directory (if any),
-caches and returns the the list of files with the root dir stripped.
+caches and returns the list of files with the root dir stripped.
 
   @files = $dist->list_files;
   # something like qw( README META.yml lib/Mod.pm )
