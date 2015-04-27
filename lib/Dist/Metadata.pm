@@ -142,7 +142,7 @@ sub default_metadata {
     # optional
     no_index => {
       # ignore test and build directories by default
-      directory => [qw( inc t xt )],
+      directory => [qw( inc t xt local perl5 fatlib )],
     },
     # provides => { package => { file => $file, version => $version } }
   };
