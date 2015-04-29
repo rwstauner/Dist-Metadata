@@ -10,7 +10,7 @@ use CPAN::Meta 2.1 ();
 use List::Util qw(first);    # core in perl v5.7.3
 
 # something that is obviously not a real value
-use constant UNKNOWN => '- unknown -';
+sub UNKNOWN () { '- unknown -' } # constant
 
 =method new
 
@@ -442,6 +442,7 @@ and simply call the corresponding method on the L<CPAN::Meta> object.
 1;
 
 =for Pod::Coverage name version provides
+UNKNOWN
 
 =for test_synopsis
 my $path_to_archive;
