@@ -141,7 +141,13 @@ sub default_metadata {
 
     # optional
     no_index => {
-      # ignore test and build directories by default
+      # Ignore the same directories as PAUSE (https://github.com/andk/pause/blob/master/lib/PAUSE/dist.pm#L758):
+        # skip "t" - libraries in ./t are test libraries!
+        # skip "xt" - libraries in ./xt are author test libraries!
+        # skip "inc" - libraries in ./inc are usually install libraries
+        # skip "local" - somebody shipped his carton setup!
+        # skip 'perl5" - somebody shipped her local::lib!
+        # skip 'fatlib' - somebody shipped their fatpack lib!
       directory => [qw( inc t xt local perl5 fatlib )],
     },
     # provides => { package => { file => $file, version => $version } }
