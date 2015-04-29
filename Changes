@@ -2,6 +2,10 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+  - Always add local, perl5, and fatlib to "no_index.directory"
+    for consistency with PAUSE.  Closes gh-12 and gh-14.
+    Thanks to Sawyer X for the pull-req and the prodding.
+
 0.925     2013-02-08T02:40:09Z
 
   - Specify 1.03 as minimum required version of Digest
