@@ -2,6 +2,8 @@ Revision history for Dist-Metadata
 
 {{$NEXT}}
 
+0.926     2015-04-29T03:16:55Z
+
   - Always add local, perl5, and fatlib to "no_index.directory"
     for consistency with PAUSE.  Closes gh-12 and gh-14.
     Thanks to Sawyer X for the pull-req and the prodding.

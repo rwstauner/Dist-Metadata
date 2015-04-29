@@ -35,7 +35,7 @@ A dist can also be represented by a directory or merely a structure of data.
 If the dist does not contain a meta file
 the module will attempt to determine some of that data from the dist.
 
-__NOTE__: This interface is still being defined.
+**NOTE**: This interface is still being defined.
 Please submit any suggestions or concerns.
 
 # METHODS
@@ -227,7 +227,7 @@ in addition to those websites please use your favorite search engine to discover
 ## Bugs / Feature Requests
 
 Please report any bugs or feature requests by email to `bug-dist-metadata at rt.cpan.org`, or through
-the web interface at [http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Metadata](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dist-Metadata). You will be automatically notified of any
+the web interface at [https://rt.cpan.org/Public/Bug/Report.html?Queue=Dist-Metadata](https://rt.cpan.org/Public/Bug/Report.html?Queue=Dist-Metadata). You will be automatically notified of any
 progress on the request by the system.
 
 ## Source Code
@@ -244,6 +244,7 @@ Randy Stauner <rwstauner@cpan.org>
 
 - David Steinbrunner <dsteinbrunner@pobox.com>
 - Jeffrey Ryan Thalhammer <thaljef@cpan.org>
+- Sawyer X <xsawyerx@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
