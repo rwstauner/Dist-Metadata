@@ -8,7 +8,7 @@ eval "require $mod" or die $@;
 $Dist::Metadata::VERSION ||= 0; # quiet warnings
 
 # we may need to prepend $FindBin::Bin
-my $root = 'corpus';
+my $root = './corpus';
 my $structs = do "$root/structs.pl";
 
 # NOTE: Portability tests report issues with file names being long
