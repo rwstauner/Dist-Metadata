@@ -1,10 +1,14 @@
+[![Build Status](https://travis-ci.org/rwstauner/Dist-Metadata.svg?branch=master)](https://travis-ci.org/rwstauner/Dist-Metadata)
+[![Coverage Status](https://coveralls.io/repos/rwstauner/Dist-Metadata/badge.svg?branch=master)](https://coveralls.io/r/rwstauner/Dist-Metadata?branch=master)
+[![Kwalitee status](http://cpants.cpanauthors.org/dist/Dist-Metadata.png)](http://cpants.charsbar.org/dist/overview/Dist-Metadata)
+
 # NAME
 
 Dist::Metadata - Information about a perl module distribution
 
 # VERSION
 
-version 0.926
+version 0.927
 
 # SYNOPSIS
 
@@ -243,6 +247,7 @@ Randy Stauner <rwstauner@cpan.org>
 # CONTRIBUTORS
 
 - David Steinbrunner <dsteinbrunner@pobox.com>
+- Graham Knop <haarg@haarg.org>
 - Jeffrey Ryan Thalhammer <thaljef@cpan.org>
 - Sawyer X <xsawyerx@cpan.org>
 
