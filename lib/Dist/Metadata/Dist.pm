@@ -427,6 +427,8 @@ sub path_classify_file {
   $self->path_class_file->new_foreign($self->file_spec, $file)
 }
 
+=for :stopwords customizable
+
 =method perl_files
 
 Returns the subset of L</list_files> that look like perl files.
