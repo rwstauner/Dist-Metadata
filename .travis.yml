@@ -10,4 +10,5 @@ env:
     - COVERAGE=1
 
 before_install:
+  - "export SKIP_POD_LINKCHECK=`[[ $TRAVIS_PERL_VERSION =~ ^5\\.20 ]] || echo 1`"
   - eval $(curl https://travis-perl.github.io/init) --auto
