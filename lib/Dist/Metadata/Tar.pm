@@ -13,7 +13,10 @@ push(@Dist::Metadata::CARP_NOT, __PACKAGE__);
 
 sub file_content {
   my ( $self, $file ) = @_;
-  return $self->archive->get_content( $self->full_path($file) );
+  my $re = quotemeta( $self->full_path($file) );
+  my($f) = grep { $_->full_path =~ m/^ (?:\.\/)? $re $/x }
+    $self->archive->get_files;
+  $f ? $f->get_content : undef;
 }
 
 sub find_files {

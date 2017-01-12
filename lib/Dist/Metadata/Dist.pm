@@ -491,7 +491,7 @@ sub remove_root_dir {
   # FIXME: can we use File::Spec for these regexp's instead of [\\/] ?
 
   # grab the root dir from the first file
-  $files[0] =~ m{^([^\\/]+)[\\/]}
+  $files[0] =~ m{^((?:\.[\\/])?[^\\/]+)[\\/]}
     # if not matched quit now
     or return (undef, @files);
 
